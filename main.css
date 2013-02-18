@@ -1,0 +1,24 @@
+#chapters {
+	float: left;
+	width: 200px;
+	height: 850px;
+}
+
+#right {
+	float: left;
+	height: 850px;	
+}
+
+#speed {
+	height: 340px;
+	float: left;
+}
+
+#play {
+	float: left;
+}
+
+#seeker {
+	width: 650px; 
+	float: left;
+}

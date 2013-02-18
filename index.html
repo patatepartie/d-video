@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
+		<link rel="stylesheet" href="main.css" />
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+		<script src="main.js"></script>
+	</head>
+	<body>
+		<div id="main">
+			<div id="chapters">
+				<div id="chapterList"></div>
+				<button id="addChapter">Add</button>						
+			</div>
+			<div id="right">
+				<div id="chapter">
+					<span>Title</span> <input type="text">
+					<span>Description</span> <input type="textarea">
+				</div>
+				<div id="player">
+					<video id="video1" width="720" height="358" style="float: left">
+						<source src="/home/patatepartie/Videos/Cars/Revspeed/revspeed-2009-09.mkv" type="video/ogg">
+						Your browser does not support the video tag.
+					</video>
+					
+					<div id="speed"></div>
+
+					<div id="controls">
+						<button id="play">Play/Pause</button>
+						<div id="seeker"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
