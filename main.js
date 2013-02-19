@@ -2,14 +2,39 @@ $(function() {
 	var video = document.getElementById("video1");
 	
 	$( "#chapterList" ).jstree({
-		plugins: ["themes","json_data","ui"],
+		plugins: ["json_data", "themes"],
 		core: {
-
 		},
 		json_data: {
-			"data": {
-				"title": "root"
-			}
+			"data": [
+		         {
+		        	 "data": "Root",
+		        	 "attr": {"id": "1"},
+		        	 "state": "open",
+		        	 "children": [
+		        	      {
+		        	    	  "data": "Child 1",
+		        	    	  "attr": {"id": "2"},
+		        	    	  "state": "open"
+		        	      },
+		        	      {
+		        	    	  "data": "Child 2",
+		        	    	  "attr": {"id": "3"},
+		        	    	  "state": "open",
+		        	    	  "children": [
+									{
+										  "data": "Child 2 - 1",
+										  "attr": {"id": "4"}
+									},
+									{
+										  "data": "Child 2 - 2",
+										  "attr": {"id": "5"}
+									}
+		        	    	  ] 
+		        	      }
+		        	 ]
+		         }
+			]
 		}
 	});
 
