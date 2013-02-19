@@ -1,6 +1,18 @@
 $(function() {
 	var video = document.getElementById("video1");
 	
+	$( "#chapterList" ).jstree({
+		plugins: ["themes","json_data","ui"],
+		core: {
+
+		},
+		json_data: {
+			"data": {
+				"title": "root"
+			}
+		}
+	});
+
 	$( "#seeker" ).slider({
 		value: 0,
 		disabled: true,
