@@ -53,6 +53,11 @@ $(function() {
 		$("#seeker").slider("option", "max", video.duration);
 	});
 
+	video.addEventListener('timeupdate', function() {
+		var video = document.getElementById("video1");
+		$("#seeker").slider("value", video.currentTime);
+	});
+
 	$( "#speed" ).slider({
 		orientation: "vertical",
 		range: "min",
