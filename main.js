@@ -2,7 +2,9 @@ $(function() {
 	var video = document.getElementById("video1");
 	
 	function timeToSeconds(time) {
-		var components = time.split(":");
+		var components = time.split(":").map(function(item) {
+			return parseInt(item);
+		});
 		return ((components[0] * 60) + components[1]) * 60 + components[2]; 
 	}
 	
