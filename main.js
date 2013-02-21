@@ -1,11 +1,28 @@
 $(function() {
 	var video = document.getElementById("video1");
 	
+	function timeToSeconds(time) {
+		var components = time.split(":");
+		return ((components[0] * 60) + components[1]) * 60 + components[2]; 
+	}
+	
 	$( "#chapterList" )
-		.bind("select_node.jstree", function(event, data) {
-			$("#seeker").slider("option", "range", true);
-			var selectedItem = data.rslt.obj;
-			$("#seeker").slider("option", "values", [selectedItem.attr("start"), selectedItem.attr("end")]);
+//		.bind("select_node.jstree", function(event, data) {
+//			$("#seeker").slider("option", "range", true);
+//			var selectedItem = data.rslt.obj;
+//			$("#seeker").slider("option", "values", [timeToSeconds(selectedItem.attr("start")), timeToSeconds(selectedItem.attr("end"))]);
+//		})
+		.on("dblclick", "a", function(event) {
+			var selectedItem = $(this).parent(),
+				start = timeToSeconds(selectedItem.attr("start")),
+				end = timeToSeconds(selectedItem.attr("end"));
+			$("#seeker").slider("option", "min", start);
+			$("#seeker").slider("option", "max", end);
+			
+			$("#seeker").slider("value", start);
+			
+			var video = document.getElementById("video1");
+			video.currentTime = start;
 		})
 		.jstree({
 			plugins: ["json_data", "themes", "ui"],
@@ -95,6 +112,11 @@ $(function() {
 	video.addEventListener('timeupdate', function() {
 		var video = document.getElementById("video1");
 		$("#seeker").slider("value", video.currentTime);
+	});
+	
+	video.addEventListener('timeupdate', function() {
+		var video = document.getElementById("video1");
+		$("#current").text(video.currentTime);
 	});
 
 	$( "#speed" ).slider({
