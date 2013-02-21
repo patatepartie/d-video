@@ -1,75 +1,81 @@
 $(function() {
 	var video = document.getElementById("video1");
 	
-	$( "#chapterList" ).jstree({
-		plugins: ["json_data", "themes"],
-		core: {
-		},
-		json_data: {
-			"data": [
-		         {
-		        	 "data": "Media",
-		        	 "attr": {"id": "media"},
-		        	 "state": "open",
-		        	 "children": [
-		        	      {
-		        	    	  "data": "Ebisu",
-		        	    	  "attr": {
-		        	    	  	"id": "Ebisu", 
-		        	    	  	"description": "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
-		        	    	  	"start": "00:00:00",
-		        	    	  	"end": "'01:33:33"
-		        	    	  }
-		        	      },
-		        	      {
-		        	    	  "data": "Tsukuba Nismo",
-		        	    	  "attr": {
-									"id": "Tsukuba Nismo",
-									"start": "01:35:19",
-									"end": "01:53:56"
-								}
-		        	      },
-		        	      {
-		        	    	  "data": "Tsukuba Interclub",
-		        	    	  "attr": {
-									"id": "Tsukuba Interclub",
-									"description": "SCCJ History Car Race",
-									"start": "01:57:56",
-									"end": "02:14:24"
-								}
-		        	      },
-		        	      {
-		        	    	  "data": "Okayama",
-		        	    	  "attr": {
-									"id": "Okayama",
-									"start": "02:38:00",
-									"end": "02:51:48"
-								},
-		        	    	  "state": "open",
-		        	    	  "children": [
-			        	    		{
-									  "data": "NSX",
-									  "attr": {
-											"id": "NSX",
-											"start": "02:38:00",
-											"end": "02:46:07"
-										}
-									},
-									{
-									  "data": "Integra",
-									  "attr": {
-											"id": "Integra",
-											"start": "02:46:08",
-											"end": "02:51:48"
-										}
+	$( "#chapterList" )
+		.bind("select_node.jstree", function(event, data) {
+			$("#seeker").slider("option", "range", true);
+			var selectedItem = data.rslt.obj;
+			$("#seeker").slider("option", "values", [selectedItem.attr("start"), selectedItem.attr("end")]);
+		})
+		.jstree({
+			plugins: ["json_data", "themes", "ui"],
+			core: {
+			},
+			json_data: {
+				"data": [
+			         {
+			        	 "data": "Media",
+			        	 "attr": {"id": "media"},
+			        	 "state": "open",
+			        	 "children": [
+			        	      {
+			        	    	  "data": "Ebisu",
+			        	    	  "attr": {
+			        	    	  	"id": "Ebisu", 
+			        	    	  	"description": "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
+			        	    	  	"start": "00:00:00",
+			        	    	  	"end": "'01:33:33"
+			        	    	  }
+			        	      },
+			        	      {
+			        	    	  "data": "Tsukuba Nismo",
+			        	    	  "attr": {
+										"id": "Tsukuba Nismo",
+										"start": "01:35:19",
+										"end": "01:53:56"
 									}
-		        	    	  ]
-		        	      },
-		        	 ]
-		         }
-			]
-		}
-	});
+			        	      },
+			        	      {
+			        	    	  "data": "Tsukuba Interclub",
+			        	    	  "attr": {
+										"id": "Tsukuba Interclub",
+										"description": "SCCJ History Car Race",
+										"start": "01:57:56",
+										"end": "02:14:24"
+									}
+			        	      },
+			        	      {
+			        	    	  "data": "Okayama",
+			        	    	  "attr": {
+										"id": "Okayama",
+										"start": "02:38:00",
+										"end": "02:51:48"
+									},
+			        	    	  "state": "open",
+			        	    	  "children": [
+				        	    		{
+										  "data": "NSX",
+										  "attr": {
+												"id": "NSX",
+												"start": "02:38:00",
+												"end": "02:46:07"
+											}
+										},
+										{
+										  "data": "Integra",
+										  "attr": {
+												"id": "Integra",
+												"start": "02:46:08",
+												"end": "02:51:48"
+											}
+										}
+			        	    	  ]
+			        	      },
+			        	 ]
+			         }
+				]
+			}
+		});
 
 	$( "#seeker" ).slider({
 		value: 0,
