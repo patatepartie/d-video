@@ -34,7 +34,11 @@ $(function() {
 				"data": [
 			         {
 			        	 "data": "Media",
-			        	 "attr": {"id": "media"},
+			        	 "attr": {
+			        		 "id": "media",
+			        		 "start": "00:00:00",
+			        		 "end": "03:26:16"
+			        	 },
 			        	 "state": "open",
 			        	 "children": [
 			        	      {
@@ -43,7 +47,7 @@ $(function() {
 			        	    	  	"id": "Ebisu", 
 			        	    	  	"description": "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
 			        	    	  	"start": "00:00:00",
-			        	    	  	"end": "'01:33:33"
+			        	    	  	"end": "01:33:33"
 			        	    	  }
 			        	      },
 			        	      {
