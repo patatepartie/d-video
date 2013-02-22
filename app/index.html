@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css" />
+		<meta charset="utf-8">
+		<title>D-Video</title>
+		
+		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css" />
 		<link rel="stylesheet" href="main.css" />
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
-		<script src="lib/jstree/jquery.jstree.js"></script>
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+		
+		<script src="/lib/jstree/jquery.jstree.js"></script>
 		<script src="main.js"></script>
 	</head>
 	<body>
@@ -20,7 +25,6 @@
 					<span>Description</span> <input type="text">
 				</div>
 				<div id="player">
-					<div id="current">0</div>
 					<video id="video1" width="720" height="358" style="float: left">
 						<source src="any.mkv" type="video/ogg">
 							Your browser does not support the video tag.
@@ -33,6 +37,8 @@
 						<button id="play">Play/Pause</button>
 						<div id="seeker"></div>
 					</div>
+					
+					<div id="current">00:00:00</div>
 				</div>
 			</div>
 		</div>

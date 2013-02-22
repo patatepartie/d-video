@@ -1,0 +1,8 @@
+{
+	"name": "d-video",
+	"version": "0.0.1",
+	"private": "true",
+	"dependencies": {
+		"connect": "2.7.0"
+	}
+}
