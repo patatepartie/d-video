@@ -8,6 +8,14 @@ $(function() {
 		return ((components[0] * 60) + components[1]) * 60 + components[2]; 
 	}
 	
+	function secondsToTime(timeInSeconds) {
+		var hours = parseInt( timeInSeconds / 3600 ) % 24,
+			minutes = parseInt( timeInSeconds / 60 ) % 60,
+			seconds = parseInt(timeInSeconds) % 60;
+		
+		return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+	}
+	
 	$( "#chapterList" )
 //		.bind("select_node.jstree", function(event, data) {
 //			$("#seeker").slider("option", "range", true);
@@ -122,7 +130,7 @@ $(function() {
 	
 	video.addEventListener('timeupdate', function() {
 		var video = document.getElementById("video1");
-		$("#current").text(video.currentTime);
+		$("#current").text(secondsToTime(video.currentTime));
 	});
 
 	$( "#speed" ).slider({
