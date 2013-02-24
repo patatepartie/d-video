@@ -35,6 +35,11 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					
 					var video = document.getElementById("video1");
 					video.currentTime = start;
+
+					$("#interval").slider("option", "disabled", true);
+					$("#interval").slider("option", "min", start);
+					$("#interval").slider("option", "max", end);		
+					$("#interval").slider("option", "values", [start, end]);
 				})
 				.jstree({
 					plugins: ["json_data", "themes", "ui"],
@@ -122,11 +127,20 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				}
 			});
 
+			$( "#interval" ).slider({
+				range: true,
+				disabled: true
+			});
+			
 			video.addEventListener('durationchange', function() {
 				var video = document.getElementById("video1");
 				$("#seeker").slider("option", "disabled", false);
 				$("#seeker").slider("option", "min", 0);
 				$("#seeker").slider("option", "max", video.duration);
+
+				$("#interval").slider("option", "min", 0);
+				$("#interval").slider("option", "max", video.duration);		
+				$("#interval").slider("option", "values", [0, video.duration]);
 			});
 
 			video.addEventListener('timeupdate', function() {
