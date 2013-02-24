@@ -4,6 +4,7 @@ var connect = require('connect'),
 
 app = connect()
 	.use(connect.static('app'))
+	.use('/videos/', connect.static('videos'))
 	.use('/js/lib/', connect.static('lib'))
 	.use('/node_modules', connect.static('node_modules'));
 
