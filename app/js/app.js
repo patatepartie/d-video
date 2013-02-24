@@ -127,10 +127,17 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#chapterEnd").val("");
 				})
 				.jstree({
-					plugins: ["json_data", "themes", "ui"],
-					core: {
+					"plugins": ["json_data", "themes", "ui"],
+					"core": {
 					},
-					json_data: chapters 
+					"json_data": {
+						"ajax": {
+							"url": "/chapters",
+							"data": function(node) {
+								console.log(node);
+							}
+						}
+					} 
 				});
 
 			$( "#seeker" ).slider({
