@@ -1,9 +1,16 @@
 {
-	"name": "d-video",
-	"version": "0.0.1",
-	"private": "true",
-	"dependencies": {
-		"connect": "2.7.0",
-		"requirejs": "latest"
-	}
+  "name": "d-video",
+  "version": "0.0.1",
+  "private": "true",
+  "dependencies": {
+    "connect": "2.7.0",
+    "requirejs": "latest"
+  },
+  "devDependencies": {
+    "grunt": "latest",
+    "grunt-contrib-requirejs": "~0.4.0"
+  },
+  "scripts": {
+    "grunt": "node_modules/.bin/grunt"
+  }
 }
