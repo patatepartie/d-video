@@ -40,7 +40,6 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					
 					$("#seeker").slider("value", start);
 					
-					var video = document.getElementById("video1");
 					video.currentTime = start;
 
 					$("#interval").slider("option", "disabled", true);
@@ -134,7 +133,6 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					video.src = 'videos/any.mkv';
 				},
 				slide: function(event, ui) {
-					var video = document.getElementById("video1");
 					video.currentTime = ui.value;	
 				}
 			});
@@ -149,7 +147,6 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			});
 			
 			video.addEventListener('durationchange', function() {
-				var video = document.getElementById("video1");
 				$("#seeker").slider("option", "disabled", false);
 				$("#seeker").slider("option", "min", 0);
 				$("#seeker").slider("option", "max", video.duration);
@@ -160,12 +157,10 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			});
 
 			video.addEventListener('timeupdate', function() {
-				var video = document.getElementById("video1");
 				$("#seeker").slider("value", video.currentTime);
 			});
 			
 			video.addEventListener('timeupdate', function() {
-				var video = document.getElementById("video1");
 				$("#current").text(secondsToTime(video.currentTime));
 			});
 
@@ -177,13 +172,11 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				step: 0.5,
 				value: 1,
 				slide: function( event, ui ) {
-					var video = document.getElementById("video1");
 					video.playbackRate = ui.value;
 				}
 			});
 
 			$("#play").click(function() {
-				var video = document.getElementById("video1");
 				if (video.paused) {
 					video.play();
 				} else {
