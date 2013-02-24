@@ -23,8 +23,13 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					var selectedItem = data.rslt.obj,
 						start = timeToSeconds(selectedItem.attr("start")),
 						end = timeToSeconds(selectedItem.attr("end"));
-					$("#seeker").slider("option", "values", [start, end]);
+					$("#interval").slider("option", "values", [start, end]);
 					$("#interval").slider("option", "disabled", false);
+
+					$("#chapterTitle").val(selectedItem.attr("id"));
+					$("#chapterDescription").val(selectedItem.attr("description"));
+					$("#chapterStart").val(selectedItem.attr("start"));
+					$("#chapterEnd").val(selectedItem.attr("end"));
 				})
 				.on("dblclick", "a", function(event) {
 					var selectedItem = $(this).parent(),
@@ -42,6 +47,11 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#interval").slider("option", "min", start);
 					$("#interval").slider("option", "max", end);		
 					$("#interval").slider("option", "values", [start, end]);
+
+					$("#chapterTitle").val("");
+					$("#chapterDescription").val("");
+					$("#chapterStart").val("");
+					$("#chapterEnd").val("");
 				})
 				.jstree({
 					plugins: ["json_data", "themes", "ui"],
@@ -131,7 +141,11 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 
 			$( "#interval" ).slider({
 				range: true,
-				disabled: true
+				disabled: true,
+				slide: function(event, ui) {
+					$("#chapterStart").val(secondsToTime(ui.values[0]));
+					$("#chapterEnd").val(secondsToTime(ui.values[1]));
+				}
 			});
 			
 			video.addEventListener('durationchange', function() {
