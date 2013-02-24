@@ -1,41 +1,7 @@
 define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	var App = function() {
-		var chapters = convertChapterstoTree({
-			"duration": "03:26:16",
-			"chapters": [ {
-					"title": "Ebisu",
-					"description": "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
-					"start": "00:00:00",
-					"end": "01:33:33"
-				}, {
-					"title": "Tsukuba Nismo",
-					"start": "01:35:19",
-					"end": "01:53:56"
-				}, {
-					"title": "Tsukuba Interclub",
-					"description": "SCCJ History Car Race",
-					"start": "01:57:56",
-					"end": "02:14:24"
-				}, {
-					"title": "Okayama",
-					"start": "02:38:00",
-					"end": "02:51:48",
-					"chapters": [{
-							"title": "NSX",
-							"start": "02:38:00",
-							"end": "02:46:07"
-						}, {
-							"title": "Integra",
-							"start": "02:46:08",
-							"end": "02:51:48"
-						}
-					]
-				}
-			]				 
-		});
-		
 		function convertChapterstoTree(chapters) {
-			var tree = {"data": [{
+			var tree = [{
 					"data": "Media",
 					"attr": {
 						"id": "Media",
@@ -44,9 +10,9 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					},
 					"state": "open"
 				}
-			]};
+			];
 
-			var node = tree.data[0];
+			var node = tree[0];
 			node.children = chapters.chapters.map(function(chapter) {
 				return convertSubChapterToChildren(chapter);
 			});
@@ -133,8 +99,8 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					"json_data": {
 						"ajax": {
 							"url": "/chapters",
-							"data": function(node) {
-								console.log(node);
+							"success": function(data) {
+								return convertChapterstoTree(data);
 							}
 						}
 					} 
