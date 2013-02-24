@@ -1,22 +1,96 @@
 define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	var App = function() {
+		var chapters = convertChapterstoTree({
+			"duration": "03:26:16",
+			"chapters": [ {
+					"title": "Ebisu",
+					"description": "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
+					"start": "00:00:00",
+					"end": "01:33:33"
+				}, {
+					"title": "Tsukuba Nismo",
+					"start": "01:35:19",
+					"end": "01:53:56"
+				}, {
+					"title": "Tsukuba Interclub",
+					"description": "SCCJ History Car Race",
+					"start": "01:57:56",
+					"end": "02:14:24"
+				}, {
+					"title": "Okayama",
+					"start": "02:38:00",
+					"end": "02:51:48",
+					"chapters": [{
+							"title": "NSX",
+							"start": "02:38:00",
+							"end": "02:46:07"
+						}, {
+							"title": "Integra",
+							"start": "02:46:08",
+							"end": "02:51:48"
+						}
+					]
+				}
+			]				 
+		});
+		
+		function convertChapterstoTree(chapters) {
+			var tree = {"data": [{
+					"data": "Media",
+					"attr": {
+						"id": "Media",
+						"start": "00:00:00",
+						"end": chapters.duration
+					},
+					"state": "open"
+				}
+			]};
+
+			var node = tree.data[0];
+			node.children = chapters.chapters.map(function(chapter) {
+				return convertSubChapterToChildren(chapter);
+			});
+
+			return tree;
+		}
+
+		function convertSubChapterToChildren(chapter) {
+			var child = {
+					"data": chapter.title,
+					"attr": {
+						"id": chapter.title,
+						"description": chapter.description,
+						"start": chapter.start,
+						"end": chapter.end
+					}
+				};
+				if (chapter.chapters) {
+					child.state = "open";
+					child.children = chapter.chapters.map(function(chapter) {
+						return convertSubChapterToChildren(chapter);
+					});
+				}
+
+			return child;
+		}
+
+		function timeToSeconds(time) {
+			var components = time.split(":").map(function(item) {
+				return parseInt(item);
+			});
+			return ((components[0] * 60) + components[1]) * 60 + components[2]; 
+		}
+		
+		function secondsToTime(timeInSeconds) {
+			var hours = parseInt( timeInSeconds / 3600 ) % 24,
+				minutes = parseInt( timeInSeconds / 60 ) % 60,
+				seconds = parseInt(timeInSeconds) % 60;
+			
+			return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+		}
+
 		$(function() {
 			var video = $("#video1").get(0);
-			
-			function timeToSeconds(time) {
-				var components = time.split(":").map(function(item) {
-					return parseInt(item);
-				});
-				return ((components[0] * 60) + components[1]) * 60 + components[2]; 
-			}
-			
-			function secondsToTime(timeInSeconds) {
-				var hours = parseInt( timeInSeconds / 3600 ) % 24,
-					minutes = parseInt( timeInSeconds / 60 ) % 60,
-					seconds = parseInt(timeInSeconds) % 60;
-				
-				return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
-			}
 			
 			$( "#chapterList" )
 				.bind("select_node.jstree", function(event, data) {
@@ -56,74 +130,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					plugins: ["json_data", "themes", "ui"],
 					core: {
 					},
-					json_data: {
-						"data": [
-					         {
-					        	 "data": "Media",
-					        	 "attr": {
-					        		 "id": "media",
-					        		 "start": "00:00:00",
-					        		 "end": "03:26:16"
-					        	 },
-					        	 "state": "open",
-					        	 "children": [
-					        	      {
-					        	    	  "data": "Ebisu",
-					        	    	  "attr": {
-					        	    	  	"id": "Ebisu", 
-					        	    	  	"description": "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
-					        	    	  	"start": "00:00:00",
-					        	    	  	"end": "01:33:33"
-					        	    	  }
-					        	      },
-					        	      {
-					        	    	  "data": "Tsukuba Nismo",
-					        	    	  "attr": {
-												"id": "Tsukuba Nismo",
-												"start": "01:35:19",
-												"end": "01:53:56"
-											}
-					        	      },
-					        	      {
-					        	    	  "data": "Tsukuba Interclub",
-					        	    	  "attr": {
-												"id": "Tsukuba Interclub",
-												"description": "SCCJ History Car Race",
-												"start": "01:57:56",
-												"end": "02:14:24"
-											}
-					        	      },
-					        	      {
-					        	    	  "data": "Okayama",
-					        	    	  "attr": {
-												"id": "Okayama",
-												"start": "02:38:00",
-												"end": "02:51:48"
-											},
-					        	    	  "state": "open",
-					        	    	  "children": [
-						        	    		{
-												  "data": "NSX",
-												  "attr": {
-														"id": "NSX",
-														"start": "02:38:00",
-														"end": "02:46:07"
-													}
-												},
-												{
-												  "data": "Integra",
-												  "attr": {
-														"id": "Integra",
-														"start": "02:46:08",
-														"end": "02:51:48"
-													}
-												}
-					        	    	  ]
-					        	      },
-					        	 ]
-					         }
-						]
-					}
+					json_data: chapters 
 				});
 
 			$( "#seeker" ).slider({
