@@ -19,11 +19,13 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			}
 			
 			$( "#chapterList" )
-		//		.bind("select_node.jstree", function(event, data) {
-		//			$("#seeker").slider("option", "range", true);
-		//			var selectedItem = data.rslt.obj;
-		//			$("#seeker").slider("option", "values", [timeToSeconds(selectedItem.attr("start")), timeToSeconds(selectedItem.attr("end"))]);
-		//		})
+				.bind("select_node.jstree", function(event, data) {
+					var selectedItem = data.rslt.obj,
+						start = timeToSeconds(selectedItem.attr("start")),
+						end = timeToSeconds(selectedItem.attr("end"));
+					$("#seeker").slider("option", "values", [start, end]);
+					$("#interval").slider("option", "disabled", false);
+				})
 				.on("dblclick", "a", function(event) {
 					var selectedItem = $(this).parent(),
 						start = timeToSeconds(selectedItem.attr("start")),
