@@ -113,7 +113,10 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			$( "#seeker" ).slider({
 				value: 0,
 				disabled: true,
-				slide: function( event, ui ) {
+				create: function(event, ui) {
+					video.src = 'videos/any.mkv';
+				},
+				slide: function(event, ui) {
 					var video = document.getElementById("video1");
 					video.currentTime = ui.value;	
 				}
