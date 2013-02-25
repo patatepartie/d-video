@@ -45,7 +45,6 @@ app.get('/chapters', function(req, res) {
 	res.setHeader('Content-Type', 'application/json');
 	
 	res.send(media);
-	console.log(media);
 });
 app.post('/chapter/:id', function(req, res) {
 	var chapter = findChapter(req.params.id);
@@ -58,8 +57,6 @@ app.post('/chapter/:id', function(req, res) {
 		chapter.end = req.body.newEnd;
 	}
 	
-	console.log(chapter);
-	
 	res.send('OK');
 });
 app.use(function(err, req, res, next) {
@@ -68,15 +65,28 @@ app.use(function(err, req, res, next) {
 });
 
 function findChapter(chapterId) {
-	var results = media.chapters.filter(function(node) {
-				return node.title === chapterId;
-			});
+	var results = findAll(media.chapters, chapterId);
 
 	if (results.length != 1) {
 		throw "Cannot find chapter with title '" + chapterId + "'";
 	}
 
 	return results[0];
+}
+
+function findAll(chapters, chapterId) {
+	var results = [];
+	chapters.forEach(function(chapter) {
+		if (chapter.title === chapterId) {
+			results.push(chapter);
+		}
+		
+		if (chapter.chapters) {
+			results = results.concat(findAll(chapter.chapters, chapterId));
+		}
+	});
+	
+	return results;
 }
 
 app.listen(8880);
