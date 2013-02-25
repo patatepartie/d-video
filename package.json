@@ -4,7 +4,8 @@
   "private": "true",
   "dependencies": {
     "express": "3.x",
-    "requirejs": "latest"
+    "requirejs": "latest",
+    "arboreal": "0.0.1"
   },
   "devDependencies": {
     "grunt": "latest",

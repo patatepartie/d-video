@@ -1,5 +1,7 @@
 define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	var App = function() {
+		var selectedNode = {};
+		
 		function convertChapterstoTree(chapters) {
 			var tree = [{
 					"data": "Media",
@@ -70,6 +72,8 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#chapterDescription").val(selectedItem.attr("description"));
 					$("#chapterStart").val(selectedItem.attr("start"));
 					$("#chapterEnd").val(selectedItem.attr("end"));
+					
+					selectedNode = selectedItem;
 				})
 				.on("dblclick", "a", function(event) {
 					var selectedItem = $(this).parent(),
@@ -121,8 +125,21 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				range: true,
 				disabled: true,
 				slide: function(event, ui) {
-					$("#chapterStart").val(secondsToTime(ui.values[0]));
-					$("#chapterEnd").val(secondsToTime(ui.values[1]));
+					var start = secondsToTime(ui.values[0]),
+						end = secondsToTime(ui.values[1]);
+					$("#chapterStart").val(start);
+					$("#chapterEnd").val(end);
+					
+					$.post({
+						"url": "/chapter/" + selectedNode.attr("id"),
+						"data": {
+							"newStart": start,
+							"newEnd": end
+						},
+						"success": function(res) {
+							$("#chapterList").jstree("refresh");
+						}
+					});
 				}
 			});
 			
