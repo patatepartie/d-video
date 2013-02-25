@@ -6,7 +6,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			var tree = [{
 					"data": "Media",
 					"attr": {
-						"id": "Media",
+						"id": "-1",
 						"start": "00:00:00",
 						"end": chapters.duration
 					},
@@ -26,7 +26,8 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			var child = {
 					"data": chapter.title,
 					"attr": {
-						"id": chapter.title,
+						"id": chapter.id,
+						"title": chapter.title,
 						"description": chapter.description,
 						"start": chapter.start,
 						"end": chapter.end
@@ -68,7 +69,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#interval").slider("option", "values", [start, end]);
 					$("#interval").slider("option", "disabled", false);
 
-					$("#chapterTitle").val(selectedItem.attr("id"));
+					$("#chapterTitle").val(selectedItem.attr("title"));
 					$("#chapterDescription").val(selectedItem.attr("description"));
 					$("#chapterStart").val(selectedItem.attr("start"));
 					$("#chapterEnd").val(selectedItem.attr("end"));

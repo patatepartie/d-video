@@ -4,28 +4,34 @@ var express = require('express'),
 		"duration" : "03:26:16",
 		"chapters" : [
 			{
+				"id": "0",
 				"title" : "Ebisu",
 				"description" : "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
 				"start" : "00:00:00",
 				"end" : "01:33:33"
 			}, {
+				"id": "1",
 				"title" : "Tsukuba Nismo",
 				"start" : "01:35:19",
 				"end" : "01:53:56"
 			}, {
+				"id": "2",
 				"title" : "Tsukuba Interclub",
 				"description" : "SCCJ History Car Race",
 				"start" : "01:57:56",
 				"end" : "02:14:24"
 			}, {
+				"id": "3",
 				"title" : "Okayama",
 				"start" : "02:38:00",
 				"end" : "02:51:48",
 				"chapters" : [ {
+					"id": "3_0",
 					"title" : "NSX",
 					"start" : "02:38:00",
 					"end" : "02:46:07"
 				}, {
+					"id": "3_1",
 					"title" : "Integra",
 					"start" : "02:46:08",
 					"end" : "02:51:48"
@@ -77,7 +83,7 @@ function findChapter(chapterId) {
 function findAll(chapters, chapterId) {
 	var results = [];
 	chapters.forEach(function(chapter) {
-		if (chapter.title === chapterId) {
+		if (chapter.id === chapterId) {
 			results.push(chapter);
 		}
 		
