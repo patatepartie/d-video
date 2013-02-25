@@ -129,16 +129,15 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 						end = secondsToTime(ui.values[1]);
 					$("#chapterStart").val(start);
 					$("#chapterEnd").val(end);
+				},
+				stop: function(event, ui) {
+					var start = secondsToTime(ui.values[0]),
+						end = secondsToTime(ui.values[1]),
+						url = "/chapter/" + selectedNode.attr("id");
 					
-					$.post({
-						"url": "/chapter/" + selectedNode.attr("id"),
-						"data": {
-							"newStart": start,
-							"newEnd": end
-						},
-						"success": function(res) {
-							$("#chapterList").jstree("refresh");
-						}
+					$.post(url, {"newStart": start, "newEnd": end })
+					.done(function(res) {
+						$("#chapterList").jstree("refresh");
 					});
 				}
 			});

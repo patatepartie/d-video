@@ -1,8 +1,8 @@
 var express = require('express'), 
 	app = express(), 
-	chapters = {
-	"duration" : "03:26:16",
-	"chapters" : [
+	media = {
+		"duration" : "03:26:16",
+		"chapters" : [
 			{
 				"title" : "Ebisu",
 				"description" : "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
@@ -30,18 +30,22 @@ var express = require('express'),
 					"start" : "02:46:08",
 					"end" : "02:51:48"
 				} ]
-			} ]
-}, Arboreal = require('arboreal');
+			} 
+		]
+	};
 
 app.use(express.static('app'));
+app.use(express.bodyParser());
+
 app.use('/videos/', express.static('videos'));
 app.use('/js/lib/', express.static('node_modules/requirejs'));
 app.use('/node_modules', express.static('node_modules'));
-app.use(express.bodyParser());
+
 app.get('/chapters', function(req, res) {
 	res.setHeader('Content-Type', 'application/json');
-	res.send(chapters);
-	console.log(chapters);
+	
+	res.send(media);
+	console.log(media);
 });
 app.post('/chapter/:id', function(req, res) {
 	var chapter = findChapter(req.params.id);
@@ -55,7 +59,7 @@ app.post('/chapter/:id', function(req, res) {
 	}
 	
 	console.log(chapter);
-
+	
 	res.send('OK');
 });
 app.use(function(err, req, res, next) {
@@ -64,16 +68,15 @@ app.use(function(err, req, res, next) {
 });
 
 function findChapter(chapterId) {
-	var tree = Arboreal.parse(chapters, 'chapters'), 
-		result = tree.find(function(node) {
-				return node.data.title === chapterId;
+	var results = media.chapters.filter(function(node) {
+				return node.title === chapterId;
 			});
 
-	if (!result) {
+	if (results.length != 1) {
 		throw "Cannot find chapter with title '" + chapterId + "'";
 	}
 
-	return result.data;
+	return results[0];
 }
 
 app.listen(8880);
