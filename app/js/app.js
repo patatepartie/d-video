@@ -68,6 +68,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 						end = timeToSeconds(selectedItem.attr("end"));
 					$("#interval").slider("option", "values", [start, end]);
 					$("#interval").slider("option", "disabled", false);
+					$("#interval").show();
 
 					$("#chapterTitle").val(selectedItem.attr("title"));
 					$("#chapterDescription").val(selectedItem.attr("description"));
@@ -87,10 +88,11 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					
 					video.currentTime = start;
 
-					$("#interval").slider("option", "disabled", true);
 					$("#interval").slider("option", "min", start);
 					$("#interval").slider("option", "max", end);		
 					$("#interval").slider("option", "values", [start, end]);
+					$("#interval").slider("option", "disabled", true);
+					$("#interval").hide();
 
 					$("#chapterTitle").val("");
 					$("#chapterDescription").val("");
@@ -142,6 +144,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					});
 				}
 			});
+			$("#interval").hide();
 			
 			video.addEventListener('durationchange', function() {
 				$("#seeker").slider("option", "disabled", false);
