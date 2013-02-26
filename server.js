@@ -48,12 +48,16 @@ app.use('/js/lib/', express.static('node_modules/requirejs'));
 app.use('/node_modules', express.static('node_modules'));
 
 app.get('/chapters', function(req, res) {
+	console.log('Request: chapters');
+	
 	res.setHeader('Content-Type', 'application/json');
 	
 	res.send(media);
 });
 app.post('/chapter/:id', function(req, res) {
 	var chapter = findChapter(req.params.id);
+	
+	console.log('Request: chapter ' + req.params.id);
 
 	if (req.body.newStart) {
 		chapter.start = req.body.newStart;

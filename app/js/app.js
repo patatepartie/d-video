@@ -1,6 +1,7 @@
 define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	var App = function() {
 		var selectedNode = {};
+		var media = {};
 		
 		function convertChapterstoTree(chapters) {
 			var tree = [{
@@ -57,11 +58,36 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			
 			return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
 		}
+		
+		function findChapter(media, chapterId) {
+			var results = findAll(media.chapters, chapterId);
+
+			if (results.length != 1) {
+				throw "Cannot find chapter with title '" + chapterId + "'";
+			}
+
+			return results[0];
+		}
+
+		function findAll(chapters, chapterId) {
+			var results = [];
+			chapters.forEach(function(chapter) {
+				if (chapter.id === chapterId) {
+					results.push(chapter);
+				}
+				
+				if (chapter.chapters) {
+					results = results.concat(findAll(chapter.chapters, chapterId));
+				}
+			});
+			
+			return results;
+		}
 
 		$(function() {
 			var video = $("#video1").get(0);
 			
-			$( "#chapterList" )
+			$("#chapterList")
 				.bind("select_node.jstree", function(event, data) {
 					var selectedItem = data.rslt.obj,
 						start = timeToSeconds(selectedItem.attr("start")),
@@ -69,7 +95,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#interval").slider("option", "values", [start, end]);
 					$("#interval").slider("option", "disabled", false);
 					$("#interval").show();
-
+	
 					$("#chapterTitle").val(selectedItem.attr("title"));
 					$("#chapterDescription").val(selectedItem.attr("description"));
 					$("#chapterStart").val(selectedItem.attr("start"));
@@ -87,13 +113,13 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#seeker").slider("value", start);
 					
 					video.currentTime = start;
-
+	
 					$("#interval").slider("option", "min", start);
 					$("#interval").slider("option", "max", end);		
 					$("#interval").slider("option", "values", [start, end]);
 					$("#interval").slider("option", "disabled", true);
 					$("#interval").hide();
-
+	
 					$("#chapterTitle").val("");
 					$("#chapterDescription").val("");
 					$("#chapterStart").val("");
@@ -104,14 +130,21 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					"core": {
 					},
 					"json_data": {
-						"ajax": {
-							"url": "/chapters",
-							"success": function(data) {
-								return convertChapterstoTree(data);
-							}
-						}
-					} 
+						"data": []
+					}
 				});
+		
+			$.getJSON("/chapters", function(data) {
+				console.log(data);
+				media = data;
+				
+				var jsTreeSettings = $("#chapterList").jstree("get_settings");
+				jsTreeSettings.json_data.data = convertChapterstoTree(media);
+				$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
+				
+				$("#chapterList").jstree("refresh");
+			});
+				
 
 			$( "#seeker" ).slider({
 				value: 0,
@@ -136,12 +169,20 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				stop: function(event, ui) {
 					var start = secondsToTime(ui.values[0]),
 						end = secondsToTime(ui.values[1]),
-						url = "/chapter/" + selectedNode.attr("id");
+						chapterId = selectedNode.attr("id"),
+						url = "/chapter/" + chapterId;
 					
-					$.post(url, {"newStart": start, "newEnd": end })
-					.done(function(res) {
-						$("#chapterList").jstree("refresh");
-					});
+					var selectedChapter = findChapter(media, chapterId);
+					selectedChapter.start = start;
+					selectedChapter.end = end;
+					
+					var jsTreeSettings = $("#chapterList").jstree("get_settings");
+					jsTreeSettings.json_data.data = convertChapterstoTree(media);
+					$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
+					
+					$("#chapterList").jstree("refresh");
+					
+					$.post(url, {"newStart": start, "newEnd": end });
 				}
 			});
 			$("#interval").hide();
