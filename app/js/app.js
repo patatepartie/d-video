@@ -83,6 +83,37 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			
 			return results;
 		}
+		
+		function findPathUntil(media, chapterId) {
+			var path = [];
+			media.chapters.forEach(function(child) {
+				buildPath(path, child, chapterId);
+			});
+			
+			return path;
+		}
+		
+		function isInPathTo(queryChapter, chapterId) {
+			if (isLeaf(queryChapter)) return false;
+			
+			var foundChapters = findAll(queryChapter.chapters, chapterId);
+			return foundChapters.length > 0;
+		}
+		
+		function isLeaf(chapter) {
+			return !chapter.chapters || chapter.chapters.length === 0; 
+		}
+		
+		function buildPath(path, chapter, chapterId) {
+			if (chapter.id === chapterId) {
+				path.push(chapter.title);
+			} else if (isInPathTo(chapter, chapterId)) {
+				path.push(chapter.title);
+				chapter.chapters.forEach(function(child) {
+					buildPath(path, child, chapterId);
+				});
+			}
+		}
 
 		$(function() {
 			var video = $("#video1").get(0);
@@ -105,7 +136,9 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				.on("dblclick", "a", function(event) {
 					var selectedItem = $(this).parent(),
 						start = timeToSeconds(selectedItem.attr("start")),
-						end = timeToSeconds(selectedItem.attr("end"));
+						end = timeToSeconds(selectedItem.attr("end")),
+						selectedId = selectedItem.attr("id"),
+						path = [media.title];
 					$("#seeker").slider("option", "min", start);
 					$("#seeker").slider("option", "max", end);
 					
@@ -123,6 +156,9 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#chapterDescription").val("");
 					$("#chapterStart").text("");
 					$("#chapterEnd").text("");
+					
+					path = path.concat(findPathUntil(media, selectedId));
+					$("#currentlyShowing").text(path.join(' / '));
 				})
 				.jstree({
 					"plugins": ["json_data", "themes", "ui"],
@@ -146,6 +182,8 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
 				
 				$("#chapterList").jstree("refresh");
+				
+				$("#currentlyShowing").text(media.title);
 			});
 				
 
@@ -200,7 +238,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				$("#interval").slider("option", "max", video.duration);		
 				$("#interval").slider("option", "values", [0, video.duration]);
 			});
-
+			
 			video.addEventListener('timeupdate', function() {
 				$("#seeker").slider("value", video.currentTime);
 			});

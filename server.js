@@ -1,6 +1,7 @@
 var express = require('express'), 
 	app = express(), 
 	media = {
+		"title": "Revspeed-0910",
 		"duration" : "03:26:16",
 		"chapters" : [
 			{
