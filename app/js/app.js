@@ -98,8 +98,8 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	
 					$("#chapterTitle").val(selectedItem.attr("title"));
 					$("#chapterDescription").val(selectedItem.attr("description"));
-					$("#chapterStart").val(selectedItem.attr("start"));
-					$("#chapterEnd").val(selectedItem.attr("end"));
+					$("#chapterStart").text(selectedItem.attr("start"));
+					$("#chapterEnd").text(selectedItem.attr("end"));
 					
 					selectedNode = selectedItem;
 				})
@@ -122,8 +122,8 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	
 					$("#chapterTitle").val("");
 					$("#chapterDescription").val("");
-					$("#chapterStart").val("");
-					$("#chapterEnd").val("");
+					$("#chapterStart").text("");
+					$("#chapterEnd").text("");
 				})
 				.jstree({
 					"plugins": ["json_data", "themes", "ui"],
@@ -140,7 +140,6 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				});
 		
 			$.getJSON("/chapters", function(data) {
-				console.log(data);
 				media = data;
 				
 				var jsTreeSettings = $("#chapterList").jstree("get_settings");
