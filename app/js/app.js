@@ -93,8 +93,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 						start = timeToSeconds(selectedItem.attr("start")),
 						end = timeToSeconds(selectedItem.attr("end"));
 					$("#interval").slider("option", "values", [start, end]);
-					$("#interval").slider("option", "disabled", false);
-					$("#interval").show();
+					$("#intervalControls").show();
 	
 					$("#chapterTitle").val(selectedItem.attr("title"));
 					$("#chapterDescription").val(selectedItem.attr("description"));
@@ -117,8 +116,8 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#interval").slider("option", "min", start);
 					$("#interval").slider("option", "max", end);		
 					$("#interval").slider("option", "values", [start, end]);
-					$("#interval").slider("option", "disabled", true);
-					$("#interval").hide();
+										
+					$("#intervalControls").hide();
 	
 					$("#chapterTitle").val("");
 					$("#chapterDescription").val("");
@@ -163,7 +162,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 
 			$("#interval").slider({
 				range: true,
-				disabled: true,
+				disabled: false,
 				slide: function(event, ui) {
 					var start = secondsToTime(ui.values[0]),
 						end = secondsToTime(ui.values[1]);
@@ -189,8 +188,9 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$.post(url, {"newStart": start, "newEnd": end });
 				}
 			});
-			$("#interval").hide();
 			
+			$("#intervalControls").hide();
+						
 			video.addEventListener('durationchange', function() {
 				$("#seeker").slider("option", "disabled", false);
 				$("#seeker").slider("option", "min", 0);
