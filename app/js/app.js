@@ -131,6 +131,11 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					},
 					"json_data": {
 						"data": []
+					},
+					"ui": {
+						"select_limit": 1,
+						"select_range_modifier": false,
+						"select_multiple_modifier": false
 					}
 				});
 		
@@ -146,7 +151,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			});
 				
 
-			$( "#seeker" ).slider({
+			$("#seeker").slider({
 				value: 0,
 				disabled: true,
 				create: function(event, ui) {
@@ -157,7 +162,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				}
 			});
 
-			$( "#interval" ).slider({
+			$("#interval").slider({
 				range: true,
 				disabled: true,
 				slide: function(event, ui) {
@@ -205,7 +210,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				$("#current").text(secondsToTime(video.currentTime));
 			});
 
-			$( "#speed" ).slider({
+			$("#speed").slider({
 				orientation: "vertical",
 				range: "min",
 				min: 0,
