@@ -17,14 +17,6 @@
 			</div>
 			<div id="right">
 				<div id="chapter">
-					<div>
-						<span>Title</span> <input id="chapterTitle" type="text">
-						<span>Description</span> <input id="chapterDescription" type="text">
-					</div>
-					<div>
-						<span>Start</span> <input id="chapterStart" type="text">
-						<span>End</span> <input id="chapterEnd" type="text">
-					</div>
 				</div>
 				<div id="player">
 					<video id="video1" width="720" height="358" style="float: left">
@@ -35,14 +27,23 @@
 					
 					<div id="speed"></div>
 
-					<div id="controls">
+					<div id="playingControls">
 						<button id="play">Play/Pause</button>
 						<div id="seeker"></div>
 					</div>
-					
 					<div id="current">00:00:00</div>
 
-					<div id="interval"></div>
+					<div id="intervalControls">
+						<div id="interval"></div>
+						<div>
+							<span id="chapterStart"></span>
+							<span id="chapterEnd"></span>
+						</div>
+						 <div>
+							<span>Title</span> <input id="chapterTitle" type="text">
+							<span>Description</span> <input id="chapterDescription" type="text">
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
