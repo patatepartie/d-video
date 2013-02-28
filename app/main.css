@@ -28,3 +28,9 @@
 	width: 650px; 
 	float: left;
 }
+
+.doubleSelected {
+	background:#ff0000; 
+	border:1px solid #99defd; 
+	padding:0 2px 0 1px;
+}

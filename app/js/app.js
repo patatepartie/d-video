@@ -1,7 +1,8 @@
 define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	var App = function() {
-		var selectedNode = {};
-		var media = {};
+		var selectedNode = {},
+			doubleSelected = null,
+			media = {};
 		
 		function convertChapterstoTree(chapters) {
 			var tree = [{
@@ -159,6 +160,15 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					
 					path = path.concat(findPathUntil(media, selectedId));
 					$("#currentlyShowing").text(path.join(' / '));
+					
+					$("#chapterList").jstree("clean_node", -1);
+					
+					if (doubleSelected) {
+						doubleSelected.removeClass("doubleSelected");
+					}
+					
+					doubleSelected = $(this); 
+					doubleSelected.addClass("doubleSelected");
 				})
 				.jstree({
 					"plugins": ["json_data", "themes", "ui"],
