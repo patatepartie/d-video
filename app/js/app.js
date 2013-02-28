@@ -183,6 +183,22 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					doubleSelected = $(this); 
 					doubleSelected.addClass("doubleSelected");
 				})
+				.bind("loaded.jstree", function (event, data) {
+					$.getJSON("/chapters", function(data) {
+						media = data;
+						
+						var jsTreeSettings = $("#chapterList").jstree("get_settings");
+						jsTreeSettings.json_data.data = convertChapterstoTree(media);
+						$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
+						
+						$("#chapterList").jstree("refresh");
+						
+						$("#currentlyShowing").text(media.title);
+						
+						doubleSelected = $("#chapterList > ul > li:first > a");
+						doubleSelected.addClass("doubleSelected");
+					});
+				})
 				.jstree({
 					"plugins": ["json_data", "themes", "ui"],
 					"core": {
