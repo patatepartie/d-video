@@ -44,7 +44,6 @@ var express = require('express'),
 app.use(express.static('app'));
 app.use(express.bodyParser());
 
-app.use('/videos/', express.static('videos'));
 app.use('/js/lib/', express.static('node_modules/requirejs'));
 app.use('/node_modules', express.static('node_modules'));
 

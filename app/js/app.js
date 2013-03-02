@@ -119,6 +119,16 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 		$(function() {
 			var video = $("#video1").get(0);
 			
+			$("#videoFile").click(function(event) {
+				$("#videoChooser").click();
+				e.preventDefault();
+			});
+
+			$("#videoChooser").on("change", function(event) {
+				var videoFile = event.target.files[0];
+				video.src = URL.createObjectURL(videoFile);
+			});
+
 			$("#chapterList")
 				.bind("select_node.jstree", function(event, data) {
 					var selectedItem = data.rslt.obj,
@@ -200,9 +210,6 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			$("#seeker").slider({
 				value: 0,
 				disabled: true,
-				create: function(event, ui) {
-					video.src = 'videos/any.mkv';
-				},
 				slide: function(event, ui) {
 					video.currentTime = ui.value;	
 				}

@@ -15,6 +15,10 @@
 	height: 850px;	
 }
 
+#videoChooser{
+	display: none;
+}
+
 #speed {
 	height: 340px;
 	float: left;
