@@ -1,44 +1,47 @@
 var express = require('express'), 
 	app = express(), 
 	media = {
-		"title": "Revspeed-0910",
-		"duration" : "03:26:16",
-		"chapters" : [
-			{
-				"id": "0",
-				"title" : "Ebisu",
-				"description" : "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
-				"start" : "00:00:00",
-				"end" : "01:33:33"
-			}, {
-				"id": "1",
-				"title" : "Tsukuba Nismo",
-				"start" : "01:35:19",
-				"end" : "01:53:56"
-			}, {
-				"id": "2",
-				"title" : "Tsukuba Interclub",
-				"description" : "SCCJ History Car Race",
-				"start" : "01:57:56",
-				"end" : "02:14:24"
-			}, {
-				"id": "3",
-				"title" : "Okayama",
-				"start" : "02:38:00",
-				"end" : "02:51:48",
-				"chapters" : [ {
-					"id": "3_0",
-					"title" : "NSX",
-					"start" : "02:38:00",
-					"end" : "02:46:07"
+		"revspeed-2009-09": {
+			"id": "revspeed-2009-09",
+			"title": "Revspeed-0910",
+			"duration" : "03:26:16",
+			"chapters" : [
+				{
+					"id": "0",
+					"title" : "Ebisu",
+					"description" : "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
+					"start" : "00:00:00",
+					"end" : "01:33:33"
 				}, {
-					"id": "3_1",
-					"title" : "Integra",
-					"start" : "02:46:08",
-					"end" : "02:51:48"
-				} ]
-			} 
-		]
+					"id": "1",
+					"title" : "Tsukuba Nismo",
+					"start" : "01:35:19",
+					"end" : "01:53:56"
+				}, {
+					"id": "2",
+					"title" : "Tsukuba Interclub",
+					"description" : "SCCJ History Car Race",
+					"start" : "01:57:56",
+					"end" : "02:14:24"
+				}, {
+					"id": "3",
+					"title" : "Okayama",
+					"start" : "02:38:00",
+					"end" : "02:51:48",
+					"chapters" : [ {
+						"id": "3_0",
+						"title" : "NSX",
+						"start" : "02:38:00",
+						"end" : "02:46:07"
+					}, {
+						"id": "3_1",
+						"title" : "Integra",
+						"start" : "02:46:08",
+						"end" : "02:51:48"
+					} ]
+				} 
+			]
+		}
 	};
 
 app.use(express.static('app'));
@@ -47,17 +50,35 @@ app.use(express.bodyParser());
 app.use('/js/lib/', express.static('node_modules/requirejs'));
 app.use('/node_modules', express.static('node_modules'));
 
-app.get('/chapters', function(req, res) {
-	console.log('Request: chapters');
+app.get('/media', function(req, res) {
+	var all = [];
+
+	console.log('Request: media');
+	res.setHeader('Content-Type', 'application/json');
+	
+	for (var medium in media) {
+		if( media.hasOwnProperty(medium) ) {
+			all.push({"id": medium, "title": media[medium].title	});
+		} 
+	};
+
+	res.send(all);
+});
+
+app.get('/media/:id/chapters', function(req, res) {
+	console.log('Request: chapters for medium ' + req.params.id);
 	
 	res.setHeader('Content-Type', 'application/json');
 	
-	res.send(media);
+	res.send(media[req.params.id]);
 });
-app.post('/chapter/:id', function(req, res) {
-	var chapter = findChapter(req.params.id);
+app.post('/media/:mediumId/chapters/:chapterId', function(req, res) {
+	var mediumId = req.params.mediumId,
+		chapterId = req.params.chapterId,
+		medium = media[mediumId],
+		chapter = findChapter(medium, chapterId);
 	
-	console.log('Request: chapter ' + req.params.id);
+	console.log('Request: chapter ' + chapterId + ' in medium ' + mediumId);
 
 	if (req.body.newStart) {
 		chapter.start = req.body.newStart;
@@ -74,11 +95,11 @@ app.use(function(err, req, res, next) {
 	res.send(500, 'Something broke!');
 });
 
-function findChapter(chapterId) {
-	var results = findAll(media.chapters, chapterId);
+function findChapter(medium, chapterId) {
+	var results = findAll(medium.chapters, chapterId);
 
 	if (results.length != 1) {
-		throw "Cannot find chapter with title '" + chapterId + "'";
+		throw "Cannot find chapter with title '" + chapterId + "' in medium '" + medium.title + "'";
 	}
 
 	return results[0];

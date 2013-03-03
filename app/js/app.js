@@ -2,7 +2,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	var App = function() {
 		var selectedNode = {},
 			doubleSelected = null,
-			media = {};
+			medium = {};
 		
 		function convertChapterstoTree(chapters) {
 			var tree = [{
@@ -60,11 +60,11 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
 		}
 		
-		function findChapter(media, chapterId) {
-			var results = findAll(media.chapters, chapterId);
+		function findChapter(medium, chapterId) {
+			var results = findAll(medium.chapters, chapterId);
 
 			if (results.length != 1) {
-				throw "Cannot find chapter with title '" + chapterId + "'";
+				throw "Cannot find chapter with title '" + chapterId + "' in medium '" + medium.title + "'";
 			}
 
 			return results[0];
@@ -85,9 +85,9 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			return results;
 		}
 		
-		function findPathUntil(media, chapterId) {
+		function findPathUntil(medium, chapterId) {
 			var path = [];
-			media.chapters.forEach(function(child) {
+			medium.chapters.forEach(function(child) {
 				buildPath(path, child, chapterId);
 			});
 			
@@ -121,7 +121,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			
 			$("#videoFile").click(function(event) {
 				$("#videoChooser").click();
-				e.preventDefault();
+				event.preventDefault();
 			});
 
 			$("#videoChooser").on("change", function(event) {
@@ -149,7 +149,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 						start = timeToSeconds(selectedItem.attr("start")),
 						end = timeToSeconds(selectedItem.attr("end")),
 						selectedId = selectedItem.attr("id"),
-						path = [media.title];
+						path = [medium.title];
 					$("#seeker").slider("option", "min", start);
 					$("#seeker").slider("option", "max", end);
 					
@@ -168,7 +168,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					$("#chapterStart").text("");
 					$("#chapterEnd").text("");
 					
-					path = path.concat(findPathUntil(media, selectedId));
+					path = path.concat(findPathUntil(medium, selectedId));
 					$("#currentlyShowing").text(path.join(' / '));
 					
 					$("#chapterList").jstree("clean_node", -1);
@@ -194,18 +194,38 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					}
 				});
 		
-			$.getJSON("/chapters", function(data) {
-				media = data;
-				
-				var jsTreeSettings = $("#chapterList").jstree("get_settings");
-				jsTreeSettings.json_data.data = convertChapterstoTree(media);
-				$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
-				
-				$("#chapterList").jstree("refresh");
-				
-				$("#currentlyShowing").text(media.title);
+			$.getJSON("/media", function(data) {
+				$("#mediaList").empty();
+				$("#mediaList").append($("<option></option>").attr("value", "-1").text("Choose one..."));
+				data.forEach(function(medium) {
+					$("#mediaList").append($("<option></option>").attr("value", medium.id).text(medium.title));					
+				});				
 			});
 				
+			$("#mediaList").change(function() {
+				var id = $(this).val();
+				if (id === "-1") {
+					var jsTreeSettings = $("#chapterList").jstree("get_settings");
+					jsTreeSettings.json_data.data = [];
+					$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
+					
+					$("#chapterList").jstree("refresh");
+					
+					$("#currentlyShowing").text("");	
+				} else {
+					$.getJSON("/media/" + id + "/chapters", function(data) {
+						medium = data;
+						
+						var jsTreeSettings = $("#chapterList").jstree("get_settings");
+						jsTreeSettings.json_data.data = convertChapterstoTree(medium);
+						$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
+						
+						$("#chapterList").jstree("refresh");
+						
+						$("#currentlyShowing").text(medium.title);
+					});
+				}
+			});
 
 			$("#seeker").slider({
 				value: 0,
@@ -228,14 +248,14 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					var start = secondsToTime(ui.values[0]),
 						end = secondsToTime(ui.values[1]),
 						chapterId = selectedNode.attr("id"),
-						url = "/chapter/" + chapterId;
+						url = "/media/" + medium.id + "/chapters/" + chapterId;
 					
-					var selectedChapter = findChapter(media, chapterId);
+					var selectedChapter = findChapter(medium, chapterId);
 					selectedChapter.start = start;
 					selectedChapter.end = end;
 					
 					var jsTreeSettings = $("#chapterList").jstree("get_settings");
-					jsTreeSettings.json_data.data = convertChapterstoTree(media);
+					jsTreeSettings.json_data.data = convertChapterstoTree(medium);
 					$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
 					
 					$("#chapterList").jstree("refresh");
