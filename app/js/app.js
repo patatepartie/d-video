@@ -118,7 +118,9 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 
 		$(function() {
 			var video = $("#video1").get(0);
-			
+
+			$("#mediaList").hide();
+
 			$("#videoFile").click(function(event) {
 				$("#videoChooser").click();
 				event.preventDefault();
@@ -127,6 +129,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			$("#videoChooser").on("change", function(event) {
 				var videoFile = event.target.files[0];
 				video.src = URL.createObjectURL(videoFile);
+				$("#mediaList").show();
 			});
 
 			$("#chapterList")
