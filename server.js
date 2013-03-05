@@ -78,7 +78,12 @@ app.get('/media', function(req, res) {
 	
 	res.send(media);
 });
-
+app.get('/sections', function(req, res) {
+	console.log('Request: sections');
+	res.setHeader('Content-Type', 'application/json');
+	
+	res.send(sections);
+});
 app.get('/media/:id/chapters', function(req, res) {
 	var sectionTree;
 	

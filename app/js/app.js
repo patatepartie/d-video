@@ -220,9 +220,38 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 							.attr("value", medium.id)
 							.data("duration", medium.duration)
 							.text(medium.title));					
-				});				
+				});
+			});
+
+			$.getJSON("/sections", function(data) {
+				localStorage.setItem("sections", JSON.stringify(data));
 			});
 				
+			function buildSectionsTree(mediumId) {
+				var allSections = JSON.parse(localStorage.getItem("sections"));
+				var results = allSections.filter(function(section) {
+					return section.parent === mediumId;
+				});
+
+				appendSubSections(allSections, results);
+
+				return results;
+			}
+
+			function appendSubSections(allSections, nodes) {
+				if (nodes !== undefined) {
+					nodes.forEach(function(section) {
+						var results = allSections.filter(function(subSection) {
+							return subSection.parent === section.id;
+						});
+						if (results.length > 0) {
+							section.chapters = results;
+							appendSubSections(allSections, results);
+						}
+					});
+				}
+			}
+
 			$("#mediaList").change(function() {
 				var id = $(this).val(),
 					selected = $(this).find("option:selected");
@@ -230,16 +259,14 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				if (id === "-1") {
 					updateTree([], "");
 				} else {
-					$.getJSON("/media/" + id + "/chapters", function(data) {
-						medium = {
-								id: id,
-								title: selected.text(),
-								duration: selected.data("duration"),
-								chapters: data
-						};
-						
-						updateTree(convertChapterstoTree(medium), medium.title);
-					});
+					medium = {
+							id: id,
+							title: selected.text(),
+							duration: selected.data("duration"),
+							chapters: buildSectionsTree(id)
+					};
+
+					updateTree(convertChapterstoTree(medium), medium.title);
 				}
 			});
 
