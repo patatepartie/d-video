@@ -116,6 +116,80 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			}
 		}
 
+		function createChapterList(tree) {
+			$("#chapterList")
+			.bind("select_node.jstree", function(event, data) {
+				var selectedItem = data.rslt.obj,
+					start = timeToSeconds(selectedItem.attr("start")),
+					end = timeToSeconds(selectedItem.attr("end"));
+				$("#interval").slider("option", "values", [start, end]);
+				$("#intervalControls").show();
+
+				$("#chapterTitle").val(selectedItem.attr("title"));
+				$("#chapterDescription").val(selectedItem.attr("description"));
+				$("#chapterStart").text(selectedItem.attr("start"));
+				$("#chapterEnd").text(selectedItem.attr("end"));
+				
+				selectedNode = selectedItem;
+			})
+			.on("dblclick", "a", function(event) {
+				var selectedItem = $(this).parent(),
+					start = timeToSeconds(selectedItem.attr("start")),
+					end = timeToSeconds(selectedItem.attr("end")),
+					selectedId = selectedItem.attr("id"),
+					path = [medium.title];
+				$("#seeker").slider("option", "min", start);
+				$("#seeker").slider("option", "max", end);
+				
+				$("#seeker").slider("value", start);
+				
+				video.currentTime = start;
+
+				$("#interval").slider("option", "min", start);
+				$("#interval").slider("option", "max", end);		
+				$("#interval").slider("option", "values", [start, end]);
+									
+				$("#intervalControls").hide();
+
+				$("#chapterTitle").val("");
+				$("#chapterDescription").val("");
+				$("#chapterStart").text("");
+				$("#chapterEnd").text("");
+				
+				path = path.concat(findPathUntil(medium, selectedId));
+				$("#currentlyShowing").text(path.join(' / '));
+				
+				$("#chapterList").jstree("clean_node", -1);
+				
+				if (doubleSelected) {
+					doubleSelected.removeClass("doubleSelected");
+				}
+				
+				doubleSelected = $(this); 
+				doubleSelected.addClass("doubleSelected");
+			})
+			.jstree({
+				"plugins": ["json_data", "themes", "ui"],
+				"core": {
+				},
+				"json_data": {
+					"data": tree
+				},
+				"ui": {
+					"select_limit": 1,
+					"select_range_modifier": false,
+					"select_multiple_modifier": false
+				}
+			});
+		}
+		
+		function updateTree(tree, text) {
+			$("#chapterList").jstree("destroy");
+			createChapterList(tree);
+			
+			$("#currentlyShowing").text(text);
+		}
+		
 		$(function() {
 			var video = $("#video1").get(0);
 
@@ -132,75 +206,16 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				$("#mediaList").show();
 			});
 
-			$("#chapterList")
-				.bind("select_node.jstree", function(event, data) {
-					var selectedItem = data.rslt.obj,
-						start = timeToSeconds(selectedItem.attr("start")),
-						end = timeToSeconds(selectedItem.attr("end"));
-					$("#interval").slider("option", "values", [start, end]);
-					$("#intervalControls").show();
-	
-					$("#chapterTitle").val(selectedItem.attr("title"));
-					$("#chapterDescription").val(selectedItem.attr("description"));
-					$("#chapterStart").text(selectedItem.attr("start"));
-					$("#chapterEnd").text(selectedItem.attr("end"));
-					
-					selectedNode = selectedItem;
-				})
-				.on("dblclick", "a", function(event) {
-					var selectedItem = $(this).parent(),
-						start = timeToSeconds(selectedItem.attr("start")),
-						end = timeToSeconds(selectedItem.attr("end")),
-						selectedId = selectedItem.attr("id"),
-						path = [medium.title];
-					$("#seeker").slider("option", "min", start);
-					$("#seeker").slider("option", "max", end);
-					
-					$("#seeker").slider("value", start);
-					
-					video.currentTime = start;
-	
-					$("#interval").slider("option", "min", start);
-					$("#interval").slider("option", "max", end);		
-					$("#interval").slider("option", "values", [start, end]);
-										
-					$("#intervalControls").hide();
-	
-					$("#chapterTitle").val("");
-					$("#chapterDescription").val("");
-					$("#chapterStart").text("");
-					$("#chapterEnd").text("");
-					
-					path = path.concat(findPathUntil(medium, selectedId));
-					$("#currentlyShowing").text(path.join(' / '));
-					
-					$("#chapterList").jstree("clean_node", -1);
-					
-					if (doubleSelected) {
-						doubleSelected.removeClass("doubleSelected");
-					}
-					
-					doubleSelected = $(this); 
-					doubleSelected.addClass("doubleSelected");
-				})
-				.jstree({
-					"plugins": ["json_data", "themes", "ui"],
-					"core": {
-					},
-					"json_data": {
-						"data": []
-					},
-					"ui": {
-						"select_limit": 1,
-						"select_range_modifier": false,
-						"select_multiple_modifier": false
-					}
-				});
+			createChapterList([]);
 		
 			$.getJSON("/media", function(data) {
+				localStorage.setItem("media", JSON.stringify(data));
+				
+				var media = JSON.parse(localStorage.getItem("media"));
+				
 				$("#mediaList").empty();
 				$("#mediaList").append($("<option></option>").attr("value", "-1").text("Choose one..."));
-				data.forEach(function(medium) {
+				media.forEach(function(medium) {
 					$("#mediaList").append($("<option></option>")
 							.attr("value", medium.id)
 							.data("duration", medium.duration)
@@ -213,13 +228,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					selected = $(this).find("option:selected");
 				
 				if (id === "-1") {
-					var jsTreeSettings = $("#chapterList").jstree("get_settings");
-					jsTreeSettings.json_data.data = [];
-					$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
-					
-					$("#chapterList").jstree("refresh");
-					
-					$("#currentlyShowing").text("");	
+					updateTree([], "");
 				} else {
 					$.getJSON("/media/" + id + "/chapters", function(data) {
 						medium = {
@@ -229,13 +238,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 								chapters: data
 						};
 						
-						var jsTreeSettings = $("#chapterList").jstree("get_settings");
-						jsTreeSettings.json_data.data = convertChapterstoTree(medium);
-						$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
-						
-						$("#chapterList").jstree("refresh");
-						
-						$("#currentlyShowing").text(medium.title);
+						updateTree(convertChapterstoTree(medium), medium.title);
 					});
 				}
 			});
