@@ -1,6 +1,6 @@
 define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 	var App = function() {
-		var selectedNode = {},
+		var selectedSectionId = "-1",
 			doubleSelected = null,
 			medium = {};
 		
@@ -8,9 +8,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			var tree = [{
 					"data": "Media",
 					"attr": {
-						"id": "-1",
-						"start": "00:00:00",
-						"end": chapters.duration
+						"id": "-1"
 					},
 					"state": "open"
 				}
@@ -56,16 +54,6 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
 		}
 		
-		function findChapter(medium, chapterId) {
-			var results = findAll(medium.chapters, chapterId);
-
-			if (results.length != 1) {
-				throw "Cannot find chapter with title '" + chapterId + "' in medium '" + medium.title + "'";
-			}
-
-			return results[0];
-		}
-
 		function findAll(chapters, chapterId) {
 			var results = [];
 			chapters.forEach(function(chapter) {
@@ -141,53 +129,87 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					sectionId = selectedItem.attr("id"),
 					section,
 					start, end;
-				
-				section = findSection(medium.id, sectionId);
 					
-				start = timeToSeconds(section.start),
-				end = timeToSeconds(section.end);
-				$("#interval").slider("option", "values", [start, end]);
-				$("#intervalControls").show();
+				if (sectionId === "-1") {
+					$("#intervalControls").hide();
 
-				$("#chapterTitle").val(section.title);
-				$("#chapterDescription").val(section.description);
-				$("#chapterStart").text(section.start);
-				$("#chapterEnd").text(section.end);
-				
-				selectedNode = selectedItem;
+					$("#chapterTitle").val(medium.title);
+					$("#chapterDescription").val("");
+					$("#chapterStart").text("00:00:00");
+					$("#chapterEnd").text(medium.duration);
+				} else {
+					section = findSection(medium.id, sectionId);
+
+					start = timeToSeconds(section.start),
+					end = timeToSeconds(section.end);
+					$("#interval").slider("option", "values", [start, end]);
+					$("#intervalControls").show();
+
+					$("#chapterTitle").val(section.title);
+					$("#chapterDescription").val(section.description);
+					$("#chapterStart").text(section.start);
+					$("#chapterEnd").text(section.end);
+
+				}
+
+				selectedSectionId = sectionId;				
 			})
 			.on("dblclick", "a", function(event) {
 				var sectionId = $(this).parent().attr("id"),
 					start, end,
 					path = [medium.title];
 				
-				section = findSection(medium.id, sectionId);
-				
-				start = timeToSeconds(section.start),
-				end = timeToSeconds(section.end);
-				
-				$("#seeker").slider("option", "min", start);
-				$("#seeker").slider("option", "max", end);
-				
-				$("#seeker").slider("value", start);
-				
-				$("#video1").get(0).currentTime = start;
+				if (sectionId === "-1") {
+					start = 0,
+					end = timeToSeconds(medium.duration);
 
-				$("#interval").slider("option", "min", start);
-				$("#interval").slider("option", "max", end);		
-				$("#interval").slider("option", "values", [start, end]);
-									
-				$("#intervalControls").hide();
+					$("#seeker").slider("option", "min", start);
+					$("#seeker").slider("option", "max", end);
+					
+					$("#seeker").slider("value", start);
+					
+					$("#video1").get(0).currentTime = start;
 
-				$("#chapterTitle").val("");
-				$("#chapterDescription").val("");
-				$("#chapterStart").text("");
-				$("#chapterEnd").text("");
-				
-				path = path.concat(findPathUntil(medium, sectionId));
-				$("#currentlyShowing").text(path.join(' / '));
-				
-				$("#chapterList").jstree("clean_node", -1);
+					$("#interval").slider("option", "min", start);
+					$("#interval").slider("option", "max", end);		
+										
+					$("#intervalControls").hide();
+
+					$("#chapterTitle").val("");
+					$("#chapterDescription").val("");
+					$("#chapterStart").text("");
+					$("#chapterEnd").text("");
+					
+					$("#currentlyShowing").text(medium.title);
+				} else {
+					section = findSection(medium.id, sectionId);
+					
+					start = timeToSeconds(section.start),
+					end = timeToSeconds(section.end);
+					
+					$("#seeker").slider("option", "min", start);
+					$("#seeker").slider("option", "max", end);
+					
+					$("#seeker").slider("value", start);
+					
+					$("#video1").get(0).currentTime = start;
+
+					$("#interval").slider("option", "min", start);
+					$("#interval").slider("option", "max", end);		
+					$("#interval").slider("option", "values", [start, end]);
+										
+					$("#intervalControls").hide();
+
+					$("#chapterTitle").val("");
+					$("#chapterDescription").val("");
+					$("#chapterStart").text("");
+					$("#chapterEnd").text("");
+					
+					path = path.concat(findPathUntil(medium, sectionId));
+					$("#currentlyShowing").text(path.join(' / '));
+					
+					$("#chapterList").jstree("clean_node", -1);
+				}
 				
 				if (doubleSelected) {
 					doubleSelected.removeClass("doubleSelected");
@@ -217,7 +239,32 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			
 			$("#currentlyShowing").text(text);
 		}
-		
+
+		function buildSectionsTree(mediumId) {
+			var allSections = JSON.parse(localStorage.getItem("sections"));
+			var results = allSections.filter(function(section) {
+				return section.parent === mediumId;
+			});
+
+			appendSubSections(allSections, results);
+
+			return results;
+		}
+
+		function appendSubSections(allSections, nodes) {
+			if (nodes !== undefined) {
+				nodes.forEach(function(section) {
+					var results = allSections.filter(function(subSection) {
+						return subSection.parent === section.id;
+					});
+					if (results.length > 0) {
+						section.chapters = results;
+						appendSubSections(allSections, results);
+					}
+				});
+			}
+		}
+
 		$(function() {
 			var video = $("#video1").get(0);
 
@@ -255,31 +302,6 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				localStorage.setItem("sections", JSON.stringify(data));
 			});
 				
-			function buildSectionsTree(mediumId) {
-				var allSections = JSON.parse(localStorage.getItem("sections"));
-				var results = allSections.filter(function(section) {
-					return section.parent === mediumId;
-				});
-
-				appendSubSections(allSections, results);
-
-				return results;
-			}
-
-			function appendSubSections(allSections, nodes) {
-				if (nodes !== undefined) {
-					nodes.forEach(function(section) {
-						var results = allSections.filter(function(subSection) {
-							return subSection.parent === section.id;
-						});
-						if (results.length > 0) {
-							section.chapters = results;
-							appendSubSections(allSections, results);
-						}
-					});
-				}
-			}
-
 			$("#mediaList").change(function() {
 				var id = $(this).val(),
 					selected = $(this).find("option:selected");
@@ -318,7 +340,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				stop: function(event, ui) {
 					var start = secondsToTime(ui.values[0]),
 						end = secondsToTime(ui.values[1]),
-						sectionId = selectedNode.attr("id"),
+						sectionId = selectedSectionId,
 						url = "/media/" + medium.id + "/chapters/" + sectionId;
 					
 					updateSection(sectionId, {"start": start, "end": end });
