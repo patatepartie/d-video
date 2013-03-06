@@ -1,12 +1,13 @@
 requirejs.config({
 	baseUrl: 'js',
 	paths: {
-		'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min',
-		'jquery.ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min',
+		'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min',
+		'jquery.ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min',
 		'jquery.jqtree': 'lib/jqtree/tree.jquery',
 		'underscore': '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min',
 		'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
-		'backbone-localstorage': '//cdnjs.cloudflare.com/ajax/libs/backbone-localstorage.js/1.1.0/backbone.localStorage-min'
+		'backbone-localstorage': '//cdnjs.cloudflare.com/ajax/libs/backbone-localstorage.js/1.1.0/backbone.localStorage-min',
+		'text': '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.3/text'
 	},
 	shim: {
 		'jquery.ui': ['jquery'],
@@ -16,9 +17,10 @@ requirejs.config({
 		},
 		'backbone': {
 			deps: ['underscore', 'jquery'],
-			exports: 'backbone'
+			exports: 'Backbone'
 		},
-		'backbone-localstorage': ['backbone']
+		'backbone-localstorage': ['backbone'],
+		'app': ['underscore', 'backbone']
 	}
 });
 
