@@ -143,7 +143,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				
 				$("#seeker").slider("value", start);
 				
-				video.currentTime = start;
+				$("#video1").get(0).currentTime = start;
 
 				$("#interval").slider("option", "min", start);
 				$("#interval").slider("option", "max", end);		

@@ -139,7 +139,15 @@ function appendSubSections(nodes) {
 }
 
 function belongsTo(section, mediumId) {
-	return section.parent === mediumId || belongsTo(getSection(section.parent), mediumId);
+	var parent;
+	
+	if (section.parent === mediumId) return true;
+	
+	
+	parent = getSection(section.parent);
+	if (!parent) return false;
+
+	return belongsTo(parent, mediumId);
 }
 
 function getSection(sectionId) {
