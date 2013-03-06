@@ -1,4 +1,4 @@
-define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
+define(['jquery', 'jquery.ui', 'jquery.jqtree'], function($) {
 	var App = function() {
 		var selectedSectionId = "-1",
 			doubleSelected = null,
@@ -6,16 +6,11 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 		
 		function convertChapterstoTree(chapters) {
 			var tree = [{
-					"data": "Media",
-					"attr": {
-						"id": "-1"
-					},
-					"state": "open"
-				}
-			];
+				label: 'Media',
+				id: "-1"
+			}];
 
-			var node = tree[0];
-			node.children = chapters.chapters.map(function(chapter) {
+			tree[0].children = chapters.chapters.map(function(chapter) {
 				return convertSubChapterToChildren(chapter);
 			});
 
@@ -24,13 +19,10 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 
 		function convertSubChapterToChildren(chapter) {
 			var child = {
-					"data": chapter.title,
-					"attr": {
-						"id": chapter.id
-					}
+					label: chapter.title,
+					id: chapter.id
 				};
 				if (chapter.chapters) {
-					child.state = "open";
 					child.children = chapter.chapters.map(function(chapter) {
 						return convertSubChapterToChildren(chapter);
 					});
@@ -121,12 +113,81 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			
 			localStorage.setItem("sections", JSON.stringify(sections));
 		}
-		
-		function createChapterList(tree) {
+				
+		function updateTree(tree, text) {
+			$("#chapterList").tree("loadData", tree);
+			
+			$("#currentlyShowing").text(text);
+		}
+
+		function buildSectionsTree(mediumId) {
+			var allSections = JSON.parse(localStorage.getItem("sections"));
+			var results = allSections.filter(function(section) {
+				return section.parent === mediumId;
+			});
+
+			appendSubSections(allSections, results);
+
+			return results;
+		}
+
+		function appendSubSections(allSections, nodes) {
+			if (nodes !== undefined) {
+				nodes.forEach(function(section) {
+					var results = allSections.filter(function(subSection) {
+						return subSection.parent === section.id;
+					});
+					if (results.length > 0) {
+						section.chapters = results;
+						appendSubSections(allSections, results);
+					}
+				});
+			}
+		}
+
+		$(function() {
+			var video = $("#video1").get(0);
+
+			$("#mediaList").hide();
+
+			$("#videoFile").click(function(event) {
+				$("#videoChooser").click();
+				event.preventDefault();
+			});
+
+			$("#videoChooser").on("change", function(event) {
+				var videoFile = event.target.files[0];
+				video.src = URL.createObjectURL(videoFile);
+				$("#mediaList").show();
+			});
+
+			$.getJSON("/media", function(data) {
+				localStorage.setItem("media", JSON.stringify(data));
+				
+				var media = JSON.parse(localStorage.getItem("media"));
+				
+				$("#mediaList").empty();
+				$("#mediaList").append($("<option></option>").attr("value", "-1").text("Choose one..."));
+				media.forEach(function(medium) {
+					$("#mediaList").append($("<option></option>")
+							.attr("value", medium.id)
+							.data("duration", medium.duration)
+							.text(medium.title));					
+				});
+			});
+
+			$.getJSON("/sections", function(data) {
+				localStorage.setItem("sections", JSON.stringify(data));
+			});
+				
 			$("#chapterList")
-			.bind("select_node.jstree", function(event, data) {
-				var selectedItem = data.rslt.obj,
-					sectionId = selectedItem.attr("id"),
+			.tree({
+				data: [],
+				autoOpen: true,
+				selectable: true
+			})
+			.bind("tree.contextmenu", function(event) {
+				var sectionId = event.node.id,
 					section,
 					start, end;
 					
@@ -152,10 +213,18 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 
 				}
 
+				if (doubleSelected) {
+					$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
+				}
+				
+				doubleSelected = event.node;
+				console.log(event.node); 
+				$(doubleSelected.element).find('.jqtree-title:first').addClass("doubleSelected");
+
 				selectedSectionId = sectionId;				
 			})
-			.on("dblclick", "a", function(event) {
-				var sectionId = $(this).parent().attr("id"),
+			.bind('tree.select', function(event) {
+				var sectionId = event.node.id,
 					start, end,
 					path = [medium.title];
 				
@@ -207,101 +276,9 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 					
 					path = path.concat(findPathUntil(medium, sectionId));
 					$("#currentlyShowing").text(path.join(' / '));
-					
-					$("#chapterList").jstree("clean_node", -1);
-				}
-				
-				if (doubleSelected) {
-					doubleSelected.removeClass("doubleSelected");
-				}
-				
-				doubleSelected = $(this); 
-				doubleSelected.addClass("doubleSelected");
-			})
-			.jstree({
-				"plugins": ["json_data", "themes", "ui"],
-				"core": {
-				},
-				"json_data": {
-					"data": tree
-				},
-				"ui": {
-					"select_limit": 1,
-					"select_range_modifier": false,
-					"select_multiple_modifier": false
 				}
 			});
-		}
-		
-		function updateTree(tree, text) {
-			$("#chapterList").jstree("destroy");
-			createChapterList(tree);
-			
-			$("#currentlyShowing").text(text);
-		}
 
-		function buildSectionsTree(mediumId) {
-			var allSections = JSON.parse(localStorage.getItem("sections"));
-			var results = allSections.filter(function(section) {
-				return section.parent === mediumId;
-			});
-
-			appendSubSections(allSections, results);
-
-			return results;
-		}
-
-		function appendSubSections(allSections, nodes) {
-			if (nodes !== undefined) {
-				nodes.forEach(function(section) {
-					var results = allSections.filter(function(subSection) {
-						return subSection.parent === section.id;
-					});
-					if (results.length > 0) {
-						section.chapters = results;
-						appendSubSections(allSections, results);
-					}
-				});
-			}
-		}
-
-		$(function() {
-			var video = $("#video1").get(0);
-
-			$("#mediaList").hide();
-
-			$("#videoFile").click(function(event) {
-				$("#videoChooser").click();
-				event.preventDefault();
-			});
-
-			$("#videoChooser").on("change", function(event) {
-				var videoFile = event.target.files[0];
-				video.src = URL.createObjectURL(videoFile);
-				$("#mediaList").show();
-			});
-
-			createChapterList([]);
-		
-			$.getJSON("/media", function(data) {
-				localStorage.setItem("media", JSON.stringify(data));
-				
-				var media = JSON.parse(localStorage.getItem("media"));
-				
-				$("#mediaList").empty();
-				$("#mediaList").append($("<option></option>").attr("value", "-1").text("Choose one..."));
-				media.forEach(function(medium) {
-					$("#mediaList").append($("<option></option>")
-							.attr("value", medium.id)
-							.data("duration", medium.duration)
-							.text(medium.title));					
-				});
-			});
-
-			$.getJSON("/sections", function(data) {
-				localStorage.setItem("sections", JSON.stringify(data));
-			});
-				
 			$("#mediaList").change(function() {
 				var id = $(this).val(),
 					selected = $(this).find("option:selected");
