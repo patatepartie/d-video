@@ -28,11 +28,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			var child = {
 					"data": chapter.title,
 					"attr": {
-						"id": chapter.id,
-						"title": chapter.title,
-						"description": chapter.description,
-						"start": chapter.start,
-						"end": chapter.end
+						"id": chapter.id
 					}
 				};
 				if (chapter.chapters) {
@@ -116,28 +112,60 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 			}
 		}
 
+		function findSection(mediumId, sectionId) {
+			var sections = JSON.parse(localStorage.getItem("sections"));
+			return sections.filter(function(section) {
+				return section.id === sectionId;
+			})[0];
+		}
+		
+		function updateSection(sectionId, sectionModifs) {
+			var sections = JSON.parse(localStorage.getItem("sections"));
+			var result = sections.filter(function(section) {
+				return section.id === sectionId;
+			})[0];
+			
+			if (sectionModifs.start) 
+				result.start = sectionModifs.start;
+			
+			if (sectionModifs.end)
+				result.end = sectionModifs.end;
+			
+			localStorage.setItem("sections", JSON.stringify(sections));
+		}
+		
 		function createChapterList(tree) {
 			$("#chapterList")
 			.bind("select_node.jstree", function(event, data) {
 				var selectedItem = data.rslt.obj,
-					start = timeToSeconds(selectedItem.attr("start")),
-					end = timeToSeconds(selectedItem.attr("end"));
+					sectionId = selectedItem.attr("id"),
+					section,
+					start, end;
+				
+				section = findSection(medium.id, sectionId);
+					
+				start = timeToSeconds(section.start),
+				end = timeToSeconds(section.end);
 				$("#interval").slider("option", "values", [start, end]);
 				$("#intervalControls").show();
 
-				$("#chapterTitle").val(selectedItem.attr("title"));
-				$("#chapterDescription").val(selectedItem.attr("description"));
-				$("#chapterStart").text(selectedItem.attr("start"));
-				$("#chapterEnd").text(selectedItem.attr("end"));
+				$("#chapterTitle").val(section.title);
+				$("#chapterDescription").val(section.description);
+				$("#chapterStart").text(section.start);
+				$("#chapterEnd").text(section.end);
 				
 				selectedNode = selectedItem;
 			})
 			.on("dblclick", "a", function(event) {
-				var selectedItem = $(this).parent(),
-					start = timeToSeconds(selectedItem.attr("start")),
-					end = timeToSeconds(selectedItem.attr("end")),
-					selectedId = selectedItem.attr("id"),
+				var sectionId = $(this).parent().attr("id"),
+					start, end,
 					path = [medium.title];
+				
+				section = findSection(medium.id, sectionId);
+				
+				start = timeToSeconds(section.start),
+				end = timeToSeconds(section.end);
+				
 				$("#seeker").slider("option", "min", start);
 				$("#seeker").slider("option", "max", end);
 				
@@ -156,7 +184,7 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				$("#chapterStart").text("");
 				$("#chapterEnd").text("");
 				
-				path = path.concat(findPathUntil(medium, selectedId));
+				path = path.concat(findPathUntil(medium, sectionId));
 				$("#currentlyShowing").text(path.join(' / '));
 				
 				$("#chapterList").jstree("clean_node", -1);
@@ -290,18 +318,10 @@ define(['jquery', 'jquery.ui', 'jquery.jstree'], function($) {
 				stop: function(event, ui) {
 					var start = secondsToTime(ui.values[0]),
 						end = secondsToTime(ui.values[1]),
-						chapterId = selectedNode.attr("id"),
-						url = "/media/" + medium.id + "/chapters/" + chapterId;
+						sectionId = selectedNode.attr("id"),
+						url = "/media/" + medium.id + "/chapters/" + sectionId;
 					
-					var selectedChapter = findChapter(medium, chapterId);
-					selectedChapter.start = start;
-					selectedChapter.end = end;
-					
-					var jsTreeSettings = $("#chapterList").jstree("get_settings");
-					jsTreeSettings.json_data.data = convertChapterstoTree(medium);
-					$.jstree._reference("chapterList")._set_settings(jsTreeSettings);
-					
-					$("#chapterList").jstree("refresh");
+					updateSection(sectionId, {"start": start, "end": end });
 					
 					$.post(url, {"newStart": start, "newEnd": end });
 				}
