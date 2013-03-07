@@ -1,4 +1,4 @@
-define(['jquery', 'views/app', 'models/medium', 'collections/media'], function($, AppView, Medium, Media) {
+define(['jquery', 'views/app', 'models/medium', 'collections/media', 'models/section', 'collections/sections'], function($, AppView, Medium, Media, Section, Sections) {
 	var App = function() {
 		var self = this;
 		
@@ -11,8 +11,13 @@ define(['jquery', 'views/app', 'models/medium', 'collections/media'], function($
 			});
 			
 			$.getJSON("/sections", function(data) {
-				localStorage.setItem("sections", JSON.stringify(data));
-
+				self.collections.sections = new Sections();
+				
+				data.forEach(function(rawSection) {
+					var section = new Section(rawSection);
+					self.collections.sections.add(section);
+				});
+				
 				self.views.app = new AppView(self);
 				self.views.app.render();
 				

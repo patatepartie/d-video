@@ -3,31 +3,31 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 		doubleSelected = null,
 		medium = {};
 	
-	function convertChapterstoTree(chapters) {
+	function convertMediumtoTree(medium) {
 		var tree = [{
 			label: 'Media',
 			id: "-1"
 		}];
 	
-		tree[0].children = chapters.chapters.map(function(chapter) {
-			return convertSubChapterToChildren(chapter);
+		tree[0].children = medium.sections.map(function(section) {
+			return convertSubSectionToNode(section);
 		});
 	
 		return tree;
 	}
 	
-	function convertSubChapterToChildren(chapter) {
-		var child = {
-				label: chapter.title,
-				id: chapter.id
+	function convertSubSectionToNode(section) {
+		var node = {
+				label: section.get("title"),
+				id: section.get("id")
 			};
-			if (chapter.chapters) {
-				child.children = chapter.chapters.map(function(chapter) {
-					return convertSubChapterToChildren(chapter);
+			if (section.get("sections")) {
+				node.children = section.get("sections").map(function(section) {
+					return convertSubSectionToNode(section);
 				});
 			}
 	
-		return child;
+		return node;
 	}
 	
 	function timeToSeconds(time) {
@@ -45,72 +45,61 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 		return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
 	}
 	
-	function findAll(chapters, chapterId) {
+	function findAll(sections, sectionId) {
 		var results = [];
-		chapters.forEach(function(chapter) {
-			if (chapter.id === chapterId) {
-				results.push(chapter);
+		sections.forEach(function(section) {
+			if (section.id === sectionId) {
+				results.push(section);
 			}
 			
-			if (chapter.chapters) {
-				results = results.concat(findAll(chapter.chapters, chapterId));
+			if (section.sections) {
+				results = results.concat(findAll(section.sections, sectionId));
 			}
 		});
 		
 		return results;
 	}
 	
-	function findPathUntil(medium, chapterId) {
+	function findPathUntil(medium, sectionId) {
 		var path = [];
-		medium.chapters.forEach(function(child) {
-			buildPath(path, child, chapterId);
+		medium.sections.forEach(function(child) {
+			buildPath(path, child, sectionId);
 		});
 		
 		return path;
 	}
 	
-	function isInPathTo(queryChapter, chapterId) {
-		if (isLeaf(queryChapter)) return false;
+	function isInPathTo(querySection, sectionId) {
+		if (isLeaf(querySection)) return false;
 		
-		var foundChapters = findAll(queryChapter.chapters, chapterId);
-		return foundChapters.length > 0;
+		var foundSections = findAll(querySection.sections, sectionId);
+		return foundSections.length > 0;
 	}
 	
-	function isLeaf(chapter) {
-		return !chapter.chapters || chapter.chapters.length === 0; 
+	function isLeaf(section) {
+		return !section.sections || section.sections.length === 0; 
 	}
 	
-	function buildPath(path, chapter, chapterId) {
-		if (chapter.id === chapterId) {
-			path.push(chapter.title);
-		} else if (isInPathTo(chapter, chapterId)) {
-			path.push(chapter.title);
-			chapter.chapters.forEach(function(child) {
-				buildPath(path, child, chapterId);
+	function buildPath(path, section, sectionId) {
+		if (section.id === sectionId) {
+			path.push(section.title);
+		} else if (isInPathTo(section, sectionId)) {
+			path.push(section.title);
+			section.sections.forEach(function(child) {
+				buildPath(path, child, sectionId);
 			});
 		}
 	}
 	
-	function findSection(mediumId, sectionId) {
-		var sections = JSON.parse(localStorage.getItem("sections"));
-		return sections.filter(function(section) {
-			return section.id === sectionId;
-		})[0];
+	function findSection(sections, sectionId) {
+		return sections.find(function(section) {
+			return section.get("id") === sectionId;
+		});
 	}
 	
-	function updateSection(sectionId, sectionModifs) {
-		var sections = JSON.parse(localStorage.getItem("sections"));
-		var result = sections.filter(function(section) {
-			return section.id === sectionId;
-		})[0];
-		
-		if (sectionModifs.start) 
-			result.start = sectionModifs.start;
-		
-		if (sectionModifs.end)
-			result.end = sectionModifs.end;
-		
-		localStorage.setItem("sections", JSON.stringify(sections));
+	function updateSection(sections, sectionId, sectionModifs) {
+		var section = findSection(sections, sectionId);
+		section.save(sectionModifs);
 	}
 			
 	function updateTree(tree, text) {
@@ -119,13 +108,12 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 		$("#currentlyShowing").text(text);
 	}
 	
-	function buildSectionsTree(mediumId) {
-		var allSections = JSON.parse(localStorage.getItem("sections"));
-		var results = allSections.filter(function(section) {
-			return section.parent === mediumId;
+	function buildSectionsTree(sections, mediumId) {
+		var results = sections.filter(function(section) {
+			return section.get("parent") === mediumId;
 		});
 	
-		appendSubSections(allSections, results);
+		appendSubSections(sections, results);
 	
 		return results;
 	}
@@ -134,10 +122,10 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 		if (nodes !== undefined) {
 			nodes.forEach(function(section) {
 				var results = allSections.filter(function(subSection) {
-					return subSection.parent === section.id;
+					return subSection.get("parent") === section.get("id");
 				});
 				if (results.length > 0) {
-					section.chapters = results;
+					section.set("sections", results);
 					appendSubSections(allSections, results);
 				}
 			});
@@ -157,18 +145,19 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 		},
 		
 		render: function() {
-			var $el = $(this.el);
+			var $el = $(this.el),
+				sections = this.app.collections.sections,
+				media = this.app.collections.media,
+				video;
 			
 			$el.html(this.template);
 			
-			var video = $("#video1").get(0);
-
-
 			$("#videoFile").click(function(event) {
 				$("#videoChooser").click();
 				event.preventDefault();
 			});
 
+			video = $("#video1").get(0);
 			$("#videoChooser").on("change", function(event) {
 				var videoFile = event.target.files[0];
 				video.src = URL.createObjectURL(videoFile);
@@ -176,9 +165,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			});
 			
 			$("#mediaList").hide();
-			var media = this.app.collections.media;
 			
-			console.log(media);
 			
 			$("#mediaList").empty();
 			$("#mediaList").append($("<option></option>").attr("value", "-1").text("Choose one..."));
@@ -208,17 +195,17 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 					$("#chapterStart").text("00:00:00");
 					$("#chapterEnd").text(medium.duration);
 				} else {
-					section = findSection(medium.id, sectionId);
+					section = findSection(sections, sectionId);
 
-					start = timeToSeconds(section.start),
-					end = timeToSeconds(section.end);
+					start = timeToSeconds(section.get("start")),
+					end = timeToSeconds(section.get("end"));
 					$("#interval").slider("option", "values", [start, end]);
 					$("#intervalControls").show();
 
-					$("#chapterTitle").val(section.title);
-					$("#chapterDescription").val(section.description);
-					$("#chapterStart").text(section.start);
-					$("#chapterEnd").text(section.end);
+					$("#chapterTitle").val(section.get("title"));
+					$("#chapterDescription").val(section.get("description"));
+					$("#chapterStart").text(section.get("start"));
+					$("#chapterEnd").text(section.get("end"));
 
 				}
 
@@ -227,7 +214,6 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 				}
 				
 				doubleSelected = event.node;
-				console.log(event.node); 
 				$(doubleSelected.element).find('.jqtree-title:first').addClass("doubleSelected");
 
 				selectedSectionId = sectionId;				
@@ -259,11 +245,15 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 					$("#chapterEnd").text("");
 					
 					$("#currentlyShowing").text(medium.title);
-				} else {
-					section = findSection(medium.id, sectionId);
 					
-					start = timeToSeconds(section.start),
-					end = timeToSeconds(section.end);
+					if (doubleSelected) {
+						$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
+					}
+				} else {
+					section = findSection(sections, sectionId);
+					
+					start = timeToSeconds(section.get("start")),
+					end = timeToSeconds(section.get("end"));
 					
 					$("#seeker").slider("option", "min", start);
 					$("#seeker").slider("option", "max", end);
@@ -287,7 +277,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 					$("#currentlyShowing").text(path.join(' / '));
 				}
 			});
-
+			
 			$("#mediaList").change(function() {
 				var id = $(this).val(),
 					selected = $(this).find("option:selected");
@@ -299,10 +289,12 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 							id: id,
 							title: selected.text(),
 							duration: selected.data("duration"),
-							chapters: buildSectionsTree(id)
+							sections: buildSectionsTree(sections, id)
 					};
 
-					updateTree(convertChapterstoTree(medium), medium.title);
+					updateTree(convertMediumtoTree(medium), medium.title);
+					var node = $("#chapterList").tree('getNodeById', "-1");
+					$("#chapterList").tree("selectNode", node);
 				}
 			});
 
@@ -329,7 +321,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 						sectionId = selectedSectionId,
 						url = "/media/" + medium.id + "/chapters/" + sectionId;
 					
-					updateSection(sectionId, {"start": start, "end": end });
+					updateSection(sections, sectionId, {"start": start, "end": end });
 					
 					$.post(url, {"newStart": start, "newEnd": end });
 				}
