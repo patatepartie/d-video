@@ -152,8 +152,8 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			
 		},
 		
-		initialize: function() {
-			
+		initialize: function(app) {
+			this.app = app;
 		},
 		
 		render: function() {
@@ -163,7 +163,6 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			
 			var video = $("#video1").get(0);
 
-			$("#mediaList").hide();
 
 			$("#videoFile").click(function(event) {
 				$("#videoChooser").click();
@@ -175,24 +174,19 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 				video.src = URL.createObjectURL(videoFile);
 				$("#mediaList").show();
 			});
-
-			$.getJSON("/media", function(data) {
-				localStorage.setItem("media", JSON.stringify(data));
-				
-				var media = JSON.parse(localStorage.getItem("media"));
-				
-				$("#mediaList").empty();
-				$("#mediaList").append($("<option></option>").attr("value", "-1").text("Choose one..."));
-				media.forEach(function(medium) {
-					$("#mediaList").append($("<option></option>")
-							.attr("value", medium.id)
-							.data("duration", medium.duration)
-							.text(medium.title));					
-				});
-			});
-
-			$.getJSON("/sections", function(data) {
-				localStorage.setItem("sections", JSON.stringify(data));
+			
+			$("#mediaList").hide();
+			var media = this.app.collections.media;
+			
+			console.log(media);
+			
+			$("#mediaList").empty();
+			$("#mediaList").append($("<option></option>").attr("value", "-1").text("Choose one..."));
+			media.forEach(function(medium) {
+				$("#mediaList").append($("<option></option>")
+						.attr("value", medium.get("id"))
+						.data("duration", medium.get("duration"))
+						.text(medium.get("title")));
 			});
 				
 			$("#chapterList")
