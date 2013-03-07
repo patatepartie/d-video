@@ -90,17 +90,6 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			});
 		}
 	}
-	
-	function findSection(sections, sectionId) {
-		return sections.find(function(section) {
-			return section.get("id") === sectionId;
-		});
-	}
-	
-	function updateSection(sections, sectionId, sectionModifs) {
-		var section = findSection(sections, sectionId);
-		section.save(sectionModifs);
-	}
 			
 	function updateTree(tree, text) {
 		$("#chapterList").tree("loadData", tree);
@@ -108,30 +97,6 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 		$("#currentlyShowing").text(text);
 	}
 	
-	function buildSectionsTree(sections, mediumId) {
-		var results = sections.filter(function(section) {
-			return section.get("parent") === mediumId;
-		});
-	
-		appendSubSections(sections, results);
-	
-		return results;
-	}
-	
-	function appendSubSections(allSections, nodes) {
-		if (nodes !== undefined) {
-			nodes.forEach(function(section) {
-				var results = allSections.filter(function(subSection) {
-					return subSection.get("parent") === section.get("id");
-				});
-				if (results.length > 0) {
-					section.set("sections", results);
-					appendSubSections(allSections, results);
-				}
-			});
-		}
-	}
-
 	var AppView = Backbone.View.extend({
 		el: 'body',
 		template: _.template(template),
@@ -195,7 +160,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 					$("#chapterStart").text("00:00:00");
 					$("#chapterEnd").text(medium.duration);
 				} else {
-					section = findSection(sections, sectionId);
+					section = sections.findById(sectionId);
 
 					start = timeToSeconds(section.get("start")),
 					end = timeToSeconds(section.get("end"));
@@ -250,7 +215,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 						$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
 					}
 				} else {
-					section = findSection(sections, sectionId);
+					section = sections.findById(sectionId);
 					
 					start = timeToSeconds(section.get("start")),
 					end = timeToSeconds(section.get("end"));
@@ -289,7 +254,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 							id: id,
 							title: selected.text(),
 							duration: selected.data("duration"),
-							sections: buildSectionsTree(sections, id)
+							sections: sections.asTree(id)
 					};
 
 					updateTree(convertMediumtoTree(medium), medium.title);
@@ -321,7 +286,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 						sectionId = selectedSectionId,
 						url = "/media/" + medium.id + "/chapters/" + sectionId;
 					
-					updateSection(sections, sectionId, {"start": start, "end": end });
+					sections.updateById(sectionId, {"start": start, "end": end });
 					
 					$.post(url, {"newStart": start, "newEnd": end });
 				}
