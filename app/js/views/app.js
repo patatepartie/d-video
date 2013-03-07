@@ -110,12 +110,13 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 		},
 		
 		render: function() {
-			var $el = $(this.el),
-				sections = this.app.collections.sections,
-				media = this.app.collections.media,
+			var self = this,
+				$el = $(self.el),
+				sections = self.app.collections.sections,
+				media = self.app.collections.media,
 				video;
 			
-			$el.html(this.template);
+			$el.html(self.template);
 			
 			$("#videoFile").click(function(event) {
 				$("#videoChooser").click();
@@ -137,7 +138,6 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			media.forEach(function(medium) {
 				$("#mediaList").append($("<option></option>")
 						.attr("value", medium.get("id"))
-						.data("duration", medium.get("duration"))
 						.text(medium.get("title")));
 			});
 				
@@ -244,17 +244,16 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			});
 			
 			$("#mediaList").change(function() {
-				var id = $(this).val(),
-					selected = $(this).find("option:selected");
+				self.app.selectedMedium = media.findById($(this).val());
 				
-				if (id === "-1") {
+				if (self.app.selectedMedium.get("id") === "-1") {
 					updateTree([], "");
 				} else {
 					medium = {
-							id: id,
-							title: selected.text(),
-							duration: selected.data("duration"),
-							sections: sections.asTree(id)
+							id: self.app.selectedMedium.get("id"),
+							title: self.app.selectedMedium.get("title"),
+							duration: self.app.selectedMedium.get("duration"),
+							sections: sections.asTree(self.app.selectedMedium.get("id"))
 					};
 
 					updateTree(convertMediumtoTree(medium), medium.title);

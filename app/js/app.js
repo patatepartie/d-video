@@ -1,7 +1,9 @@
-define(['jquery', 'views/app', 'server'], function($, AppView, Server) {
+define(['jquery', 'views/app', 'server', 'models/medium'], function($, AppView, Server, Medium) {
 	var App = function() {
 		var self = this;
 		
+		self.selectedMedium = new Medium();
+
 		self.server = new Server(self);
 		self.server.startupSync(function() {
 			self.views.app = new AppView(self);
@@ -11,7 +13,8 @@ define(['jquery', 'views/app', 'server'], function($, AppView, Server) {
 
 	App.prototype = {
 			views: {},
-			collections: {}
+			collections: {},
+			selectedMedium: {}
 	};
 
 	return App;
