@@ -1,4 +1,4 @@
-define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(template) {
+define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree'], function(template, Section) {
 	var selectedSectionId = "-1",
 		doubleSelected = null;
 	
@@ -149,61 +149,45 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			.bind('tree.select', function(event) {
 				var sectionId = event.node.id,
 					start, end,
-					path = [self.app.models.activeMedium.get("title")];
+					path = [self.app.models.activeMedium.get("title")],
+					activeSection;
 				
 				if (sectionId === "-1") {
-					start = 0,
-					end = timeToSeconds(self.app.models.medium.duration);
-
-					$("#seeker").slider("option", "min", start);
-					$("#seeker").slider("option", "max", end);
-					
-					$("#seeker").slider("value", start);
-					
-					$("#video1").get(0).currentTime = start;
-
-					$("#interval").slider("option", "min", start);
-					$("#interval").slider("option", "max", end);		
+					self.app.models.activeSection = new Section(self.app.models.activeMedium.get("duration"));
 										
-					$("#intervalControls").hide();
-
-					$("#chapterTitle").val("");
-					$("#chapterDescription").val("");
-					$("#chapterStart").text("");
-					$("#chapterEnd").text("");
-					
 					$("#currentlyShowing").text(self.app.models.medium.title);
-					
-					if (doubleSelected) {
-						$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
-					}
 				} else {
-					section = sections.findById(sectionId);
-					
-					start = timeToSeconds(section.get("start")),
-					end = timeToSeconds(section.get("end"));
-					
-					$("#seeker").slider("option", "min", start);
-					$("#seeker").slider("option", "max", end);
-					
-					$("#seeker").slider("value", start);
-					
-					$("#video1").get(0).currentTime = start;
-
-					$("#interval").slider("option", "min", start);
-					$("#interval").slider("option", "max", end);		
-					$("#interval").slider("option", "values", [start, end]);
-										
-					$("#intervalControls").hide();
-
-					$("#chapterTitle").val("");
-					$("#chapterDescription").val("");
-					$("#chapterStart").text("");
-					$("#chapterEnd").text("");
+					self.app.models.activeSection = sections.findById(sectionId);
 					
 					path = path.concat(findPathUntil(self.app.models.medium.sections, sectionId));
 					$("#currentlyShowing").text(path.join(' / '));
 				}
+				
+				if (doubleSelected) {
+					$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
+				}
+				
+				activeSection = self.app.models.activeSection;
+				
+				start = timeToSeconds(activeSection.get('start')),
+				end = timeToSeconds(activeSection.get('end'));
+				
+				$("#seeker").slider("option", "min", start);
+				$("#seeker").slider("option", "max", end);
+				
+				$("#seeker").slider("value", start);
+				
+				$("#video1").get(0).currentTime = start;
+
+				$("#interval").slider("option", "min", start);
+				$("#interval").slider("option", "max", end);	
+				
+				$("#intervalControls").hide();
+				
+				$("#chapterTitle").val("");
+				$("#chapterDescription").val("");
+				$("#chapterStart").text("");
+				$("#chapterEnd").text("");
 			});
 			
 			$("#seeker").slider({

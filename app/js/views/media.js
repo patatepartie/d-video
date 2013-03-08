@@ -1,4 +1,4 @@
-define(['text!templates/medium.html'], function(template) {
+define(['text!templates/medium.html', 'models/section'], function(template, Section) {
 	function convertMediumtoTree(medium) {
 		var tree = [{
 			label: 'Media',
@@ -73,6 +73,8 @@ define(['text!templates/medium.html'], function(template) {
 						duration: activeMedium.get("duration"),
 						sections: self.sections.asTree(activeMedium.get("id"))
 				};
+				
+				self.models.activeSection = new Section({end: activeMedium.get("duration")});
 
 				updateTree(convertMediumtoTree(self.models.medium), self.models.medium.title);
 				var node = $("#chapterList").tree('getNodeById', "-1");
