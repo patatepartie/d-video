@@ -1,6 +1,5 @@
 define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree'], function(template, Section) {
-	var selectedSectionId = "-1",
-		doubleSelected = null;
+	var doubleSelected = null;
 	
 	function timeToSeconds(time) {
 		var components = time.split(":").map(function(item) {
@@ -110,54 +109,18 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 				autoOpen: true,
 				selectable: true
 			})
-			.bind("tree.contextmenu", function(event) {
-				var sectionId = event.node.id,
-					section,
-					start, end;
-					
-				if (sectionId === "-1") {
-					$("#intervalControls").hide();
-
-					$("#chapterTitle").val(self.app.models.medium.title);
-					$("#chapterDescription").val("");
-					$("#chapterStart").text("00:00:00");
-					$("#chapterEnd").text(self.app.models.medium.duration);
-				} else {
-					section = sections.findById(sectionId);
-
-					start = timeToSeconds(section.get("start")),
-					end = timeToSeconds(section.get("end"));
-					$("#interval").slider("option", "values", [start, end]);
-					$("#intervalControls").show();
-
-					$("#chapterTitle").val(section.get("title"));
-					$("#chapterDescription").val(section.get("description"));
-					$("#chapterStart").text(section.get("start"));
-					$("#chapterEnd").text(section.get("end"));
-
-				}
-
-				if (doubleSelected) {
-					$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
-				}
-				
-				doubleSelected = event.node;
-				$(doubleSelected.element).find('.jqtree-title:first').addClass("doubleSelected");
-
-				selectedSectionId = sectionId;				
-			})
 			.bind('tree.select', function(event) {
 				var sectionId = event.node.id,
 					start, end,
 					path = [self.app.models.activeMedium.get("title")],
-					activeSection;
+					showingSection;
 				
 				if (sectionId === "-1") {
-					self.app.models.activeSection = new Section(self.app.models.activeMedium.get("duration"));
+					self.app.models.showingSection = new Section(self.app.models.activeMedium.get("duration"));
 										
 					$("#currentlyShowing").text(self.app.models.medium.title);
 				} else {
-					self.app.models.activeSection = sections.findById(sectionId);
+					self.app.models.showingSection = sections.findById(sectionId);
 					
 					path = path.concat(findPathUntil(self.app.models.medium.sections, sectionId));
 					$("#currentlyShowing").text(path.join(' / '));
@@ -167,10 +130,10 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 					$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
 				}
 				
-				activeSection = self.app.models.activeSection;
+				showingSection = self.app.models.showingSection;
 				
-				start = timeToSeconds(activeSection.get('start')),
-				end = timeToSeconds(activeSection.get('end'));
+				start = timeToSeconds(showingSection.get('start')),
+				end = timeToSeconds(showingSection.get('end'));
 				
 				$("#seeker").slider("option", "min", start);
 				$("#seeker").slider("option", "max", end);
@@ -188,6 +151,44 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 				$("#chapterDescription").val("");
 				$("#chapterStart").text("");
 				$("#chapterEnd").text("");
+			})
+			.bind("tree.contextmenu", function(event) {
+				var sectionId = event.node.id,
+					section,
+					start, end;
+					
+				if (doubleSelected) {
+					$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
+				}
+				
+				if (sectionId === "-1") {
+					self.app.models.activeSection = new Section();
+					self.app.models.showingSection = new Section(self.app.models.activeMedium.get("duration"));
+					$("#intervalControls").hide();
+
+					$("#chapterTitle").val(self.app.models.medium.title);
+					$("#chapterDescription").val("");
+					$("#chapterStart").text("00:00:00");
+					$("#chapterEnd").text(self.app.models.medium.duration);
+					
+					$("#chapterList").tree("selectNode", event.node);
+				} else {
+					section = sections.findById(sectionId);
+					self.app.models.activeSection = section;
+					
+					start = timeToSeconds(section.get("start")),
+					end = timeToSeconds(section.get("end"));
+					$("#interval").slider("option", "values", [start, end]);
+					$("#intervalControls").show();
+
+					$("#chapterTitle").val(section.get("title"));
+					$("#chapterDescription").val(section.get("description"));
+					$("#chapterStart").text(section.get("start"));
+					$("#chapterEnd").text(section.get("end"));
+					
+					doubleSelected = event.node;
+					$(doubleSelected.element).find('.jqtree-title:first').addClass("doubleSelected");
+				}
 			});
 			
 			$("#seeker").slider({
@@ -204,13 +205,14 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 				slide: function(event, ui) {
 					var start = secondsToTime(ui.values[0]),
 						end = secondsToTime(ui.values[1]);
-					$("#chapterStart").val(start);
-					$("#chapterEnd").val(end);
+					
+					$("#chapterStart").text(start);
+					$("#chapterEnd").text(end);
 				},
 				stop: function(event, ui) {
 					var start = secondsToTime(ui.values[0]),
 						end = secondsToTime(ui.values[1]),
-						sectionId = selectedSectionId,
+						sectionId = self.app.models.activeSection.get('id'),
 						url = "/media/" + self.app.models.activeMedium.get("id") + "/chapters/" + sectionId;
 					
 					sections.updateById(sectionId, {"start": start, "end": end });

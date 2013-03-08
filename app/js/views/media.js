@@ -64,7 +64,10 @@ define(['text!templates/medium.html', 'models/section'], function(template, Sect
 			var activeMedium = self.collection.findById($el.val());
 			self.models.activeMedium = activeMedium;
 			
+			self.models.activeSection = null;
+			
 			if (activeMedium.get("id") === "-1") {
+				self.models.showingSection = null;
 				updateTree([], "");
 			} else {
 				self.models.medium = {
@@ -74,7 +77,7 @@ define(['text!templates/medium.html', 'models/section'], function(template, Sect
 						sections: self.sections.asTree(activeMedium.get("id"))
 				};
 				
-				self.models.activeSection = new Section({end: activeMedium.get("duration")});
+				self.models.showingSection = new Section({end: activeMedium.get("duration")});
 
 				updateTree(convertMediumtoTree(self.models.medium), self.models.medium.title);
 				var node = $("#chapterList").tree('getNodeById', "-1");
