@@ -1,16 +1,21 @@
 var express = require('express'), 
 	app = express(),
 	media = [
-		{
+		 {
+			 "id": "-1",
+			"title": "Choose one...",
+			"duration" : "00:00:00"
+		 },
+		 {
 			"id": "revspeed-2009-09",
 			"title": "Revspeed-0909",
 			"duration" : "03:26:16"
-		},
-		{
+		 },
+		 {
 			"id": "revspeed-2009-10",
 			"title": "Revspeed-0910",
 			"duration" : "03:26:16"
-		}
+		 }
 	],
 	sections = [
 		{

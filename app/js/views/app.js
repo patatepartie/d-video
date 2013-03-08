@@ -133,14 +133,6 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			$("#mediaList").hide();
 			
 			
-			$("#mediaList").empty();
-			$("#mediaList").append($("<option></option>").attr("value", "-1").text("Choose one..."));
-			media.forEach(function(medium) {
-				$("#mediaList").append($("<option></option>")
-						.attr("value", medium.get("id"))
-						.text(medium.get("title")));
-			});
-				
 			$("#chapterList")
 			.tree({
 				data: [],
@@ -244,16 +236,17 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			});
 			
 			$("#mediaList").change(function() {
-				self.app.selectedMedium = media.findById($(this).val());
+				var activeMedium = media.findById($(this).val());
+				self.app.models.activeMedium = activeMedium;
 				
-				if (self.app.selectedMedium.get("id") === "-1") {
+				if (activeMedium.get("id") === "-1") {
 					updateTree([], "");
 				} else {
 					medium = {
-							id: self.app.selectedMedium.get("id"),
-							title: self.app.selectedMedium.get("title"),
-							duration: self.app.selectedMedium.get("duration"),
-							sections: sections.asTree(self.app.selectedMedium.get("id"))
+							id: activeMedium.get("id"),
+							title: activeMedium.get("title"),
+							duration: activeMedium.get("duration"),
+							sections: sections.asTree(activeMedium.get("id"))
 					};
 
 					updateTree(convertMediumtoTree(medium), medium.title);
