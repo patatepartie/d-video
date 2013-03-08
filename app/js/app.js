@@ -17,7 +17,7 @@ define([
 				self.views.app = new AppView(self);
 				self.views.app.render();
 				
-				self.views.media = new MediaView({collection: self.collections.media});
+				self.views.media = new MediaView({models: self.models, collection: self.collections.media, sections: self.collections.sections});
 				self.views.media.render();
 			});
 		};

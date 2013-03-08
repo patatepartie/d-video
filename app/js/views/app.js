@@ -1,34 +1,6 @@
 define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(template) {
 	var selectedSectionId = "-1",
-		doubleSelected = null,
-		medium = {};
-	
-	function convertMediumtoTree(medium) {
-		var tree = [{
-			label: 'Media',
-			id: "-1"
-		}];
-	
-		tree[0].children = medium.sections.map(function(section) {
-			return convertSubSectionToNode(section);
-		});
-	
-		return tree;
-	}
-	
-	function convertSubSectionToNode(section) {
-		var node = {
-				label: section.get("title"),
-				id: section.get("id")
-			};
-			if (section.get("sections")) {
-				node.children = section.get("sections").map(function(section) {
-					return convertSubSectionToNode(section);
-				});
-			}
-	
-		return node;
-	}
+		doubleSelected = null;
 	
 	function timeToSeconds(time) {
 		var components = time.split(":").map(function(item) {
@@ -60,9 +32,9 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 		return results;
 	}
 	
-	function findPathUntil(medium, sectionId) {
+	function findPathUntil(sections, sectionId) {
 		var path = [];
-		medium.sections.forEach(function(child) {
+		sections.forEach(function(child) {
 			buildPath(path, child, sectionId);
 		});
 		
@@ -113,7 +85,6 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			var self = this,
 				$el = $(self.el),
 				sections = self.app.collections.sections,
-				media = self.app.collections.media,
 				video;
 			
 			$el.html(self.template);
@@ -147,10 +118,10 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 				if (sectionId === "-1") {
 					$("#intervalControls").hide();
 
-					$("#chapterTitle").val(medium.title);
+					$("#chapterTitle").val(self.app.models.medium.title);
 					$("#chapterDescription").val("");
 					$("#chapterStart").text("00:00:00");
-					$("#chapterEnd").text(medium.duration);
+					$("#chapterEnd").text(self.app.models.medium.duration);
 				} else {
 					section = sections.findById(sectionId);
 
@@ -178,11 +149,11 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 			.bind('tree.select', function(event) {
 				var sectionId = event.node.id,
 					start, end,
-					path = [medium.title];
+					path = [self.app.models.activeMedium.get("title")];
 				
 				if (sectionId === "-1") {
 					start = 0,
-					end = timeToSeconds(medium.duration);
+					end = timeToSeconds(self.app.models.medium.duration);
 
 					$("#seeker").slider("option", "min", start);
 					$("#seeker").slider("option", "max", end);
@@ -201,7 +172,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 					$("#chapterStart").text("");
 					$("#chapterEnd").text("");
 					
-					$("#currentlyShowing").text(medium.title);
+					$("#currentlyShowing").text(self.app.models.medium.title);
 					
 					if (doubleSelected) {
 						$(doubleSelected.element).find('.jqtree-title').removeClass("doubleSelected");
@@ -230,31 +201,11 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 					$("#chapterStart").text("");
 					$("#chapterEnd").text("");
 					
-					path = path.concat(findPathUntil(medium, sectionId));
+					path = path.concat(findPathUntil(self.app.models.medium.sections, sectionId));
 					$("#currentlyShowing").text(path.join(' / '));
 				}
 			});
 			
-			$("#mediaList").change(function() {
-				var activeMedium = media.findById($(this).val());
-				self.app.models.activeMedium = activeMedium;
-				
-				if (activeMedium.get("id") === "-1") {
-					updateTree([], "");
-				} else {
-					medium = {
-							id: activeMedium.get("id"),
-							title: activeMedium.get("title"),
-							duration: activeMedium.get("duration"),
-							sections: sections.asTree(activeMedium.get("id"))
-					};
-
-					updateTree(convertMediumtoTree(medium), medium.title);
-					var node = $("#chapterList").tree('getNodeById', "-1");
-					$("#chapterList").tree("selectNode", node);
-				}
-			});
-
 			$("#seeker").slider({
 				value: 0,
 				disabled: true,
@@ -276,7 +227,7 @@ define(['text!templates/app.html', 'jquery.ui', 'jquery.jqtree'], function(templ
 					var start = secondsToTime(ui.values[0]),
 						end = secondsToTime(ui.values[1]),
 						sectionId = selectedSectionId,
-						url = "/media/" + medium.id + "/chapters/" + sectionId;
+						url = "/media/" + self.app.models.activeMedium.get("id") + "/chapters/" + sectionId;
 					
 					sections.updateById(sectionId, {"start": start, "end": end });
 					
