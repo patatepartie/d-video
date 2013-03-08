@@ -1,21 +1,21 @@
 var express = require('express'), 
 	app = express(),
 	media = [
-		 {
-			 "id": "-1",
-			"title": "Choose one...",
-			"duration" : "00:00:00"
-		 },
-		 {
-			"id": "revspeed-2009-09",
-			"title": "Revspeed-0909",
-			"duration" : "03:26:16"
-		 },
-		 {
-			"id": "revspeed-2009-10",
-			"title": "Revspeed-0910",
-			"duration" : "03:26:16"
-		 }
+		{
+            "id": "-1",
+            "title": "Choose one...",
+            "duration" : "00:00:00"
+        },
+        {
+            "id": "revspeed-2009-09",
+            "title": "Revspeed-0909",
+            "duration" : "03:26:16"
+        },
+        {
+            "id": "revspeed-2009-10",
+            "title": "Revspeed-0910",
+            "duration" : "03:26:16"
+        }
 	],
 	sections = [
 		{
@@ -69,7 +69,9 @@ var express = require('express'),
 			"start" : "00:00:00",
 			"end" : "01:33:33"
 		}
-	];
+	],
+    port = process.env.PORT || 8880,
+    ip = process.env.IP || 'localhost';
 
 app.use(express.static('app'));
 app.use(express.bodyParser());
@@ -161,6 +163,6 @@ function getSection(sectionId) {
 	})[0];
 }
 
-app.listen(8880);
+app.listen(port, ip);
 
-console.log('Running on http://localhost:8880');
+console.log('Running on http://' + ip + ':' + port);
