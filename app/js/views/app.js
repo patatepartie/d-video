@@ -201,10 +201,6 @@ define(['backbone', 'underscore', 'text!templates/app.html', 'models/section', '
 				$("#interval").slider("option", "values", [0, video.duration]);
 			});
 						
-			video.addEventListener('timeupdate', function() {
-				$("#current").text(secondsToTime(video.currentTime));
-			});
-
 			$("#speed").slider({
 				orientation: "vertical",
 				range: "min",
