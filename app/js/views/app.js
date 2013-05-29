@@ -1,13 +1,6 @@
 define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree'], function(template, Section) {
 	var doubleSelected = null;
 	
-	function timeToSeconds(time) {
-		var components = time.split(":").map(function(item) {
-			return parseInt(item);
-		});
-		return ((components[0] * 60) + components[1]) * 60 + components[2]; 
-	}
-	
 	function secondsToTime(timeInSeconds) {
 		var hours = parseInt( timeInSeconds / 3600 ) % 24,
 			minutes = parseInt( timeInSeconds / 60 ) % 60,
@@ -88,17 +81,17 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 			
 			$el.html(self.template);
 			
-			$("#videoFile").click(function(event) {
-				$("#videoChooser").click();
-				event.preventDefault();
-			});
+			// $("#videoFile").click(function(event) {
+			// 	$("#videoChooser").click();
+			// 	event.preventDefault();
+			// });
 
 			video = $("#video1").get(0);
-			$("#videoChooser").on("change", function(event) {
-				var videoFile = event.target.files[0];
-				video.src = URL.createObjectURL(videoFile);
-				$("#mediaList").show();
-			});
+			// $("#videoChooser").on("change", function(event) {
+			// 	var videoFile = event.target.files[0];
+			// 	video.src = window.URL.createObjectURL(videoFile);
+			// 	$("#mediaList").show();
+			// });
 			
 			$("#mediaList").hide();
 			
@@ -132,8 +125,8 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 				
 				showingSection = self.app.models.showingSection;
 				
-				start = timeToSeconds(showingSection.get('start')),
-				end = timeToSeconds(showingSection.get('end'));
+				start = showingSection.startAsSeconds(),
+				end = showingSection.endAsSeconds();
 				
 				$("#seeker").slider("option", "min", start);
 				$("#seeker").slider("option", "max", end);
@@ -176,8 +169,8 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 					section = sections.findById(sectionId);
 					self.app.models.activeSection = section;
 					
-					start = timeToSeconds(section.get("start")),
-					end = timeToSeconds(section.get("end"));
+					start = section.startAsSeconds(),
+					end = section.endAsSeconds();
 					$("#interval").slider("option", "values", [start, end]);
 					$("#intervalControls").show();
 
