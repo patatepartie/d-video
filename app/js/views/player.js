@@ -9,7 +9,7 @@ define(['backbone'], function(Backbone) {
 				
 		initialize: function(options) {
             this.model.on('change:url', this.loadMedium, this);
-            this.model.on('change:currentTime', this.changeCurrentTime, this);
+            this.model.on('change:seekedTime', this.changeCurrentTime, this);
             this.model.on('change:playing', this.togglePlaying, this);
 		},
         
@@ -19,7 +19,7 @@ define(['backbone'], function(Backbone) {
         },
         
         changeCurrentTime: function() {
-            this.el.currentTime = this.model.get('currentTime');
+            this.el.currentTime = this.model.get('seekedTime');
         },
         
         togglePlaying: function() {

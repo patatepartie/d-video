@@ -13,7 +13,7 @@ define(['backbone'], function(Backbone) {
 		},
         
         moveSeeker: function() {
-            this.$el.slider("value", this.model.get('currentTime'));
+            this.$el.slider("value", this.model.get('seekedTime'));
         },
         
         changeLength: function() {
