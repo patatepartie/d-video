@@ -1,10 +1,10 @@
-define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree'], function(template, Section) {
+define(['backbone', 'underscore', 'text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree'], function(Backbone, _, template, Section) {
 	var doubleSelected = null;
 	
 	function secondsToTime(timeInSeconds) {
-		var hours = parseInt( timeInSeconds / 3600 ) % 24,
-			minutes = parseInt( timeInSeconds / 60 ) % 60,
-			seconds = parseInt(timeInSeconds) % 60;
+		var hours = parseInt(timeInSeconds / 3600, 10) % 24,
+			minutes = parseInt(timeInSeconds / 60, 10) % 60,
+			seconds = parseInt(timeInSeconds, 10) % 60;
 		
 		return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
 	}
@@ -171,14 +171,6 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 				}
 			});
 			
-			$("#seeker").slider({
-				value: 0,
-				disabled: true,
-				slide: function(event, ui) {
-					video.currentTime = ui.value;	
-				}
-			});
-
 			$("#interval").slider({
 				range: true,
 				disabled: false,
@@ -204,19 +196,11 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 			$("#intervalControls").hide();
 						
 			video.addEventListener('durationchange', function() {
-				$("#seeker").slider("option", "disabled", false);
-				$("#seeker").slider("option", "min", 0);
-				$("#seeker").slider("option", "max", video.duration);
-
 				$("#interval").slider("option", "min", 0);
 				$("#interval").slider("option", "max", video.duration);		
 				$("#interval").slider("option", "values", [0, video.duration]);
 			});
-			
-			video.addEventListener('timeupdate', function() {
-				$("#seeker").slider("value", video.currentTime);
-			});
-			
+						
 			video.addEventListener('timeupdate', function() {
 				$("#current").text(secondsToTime(video.currentTime));
 			});
