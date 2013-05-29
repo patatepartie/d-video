@@ -1,5 +1,4 @@
 define([
-	'jquery',
 	'server',
 	'views/app',
 	'views/media',
@@ -8,10 +7,11 @@ define([
     'views/player',
     'views/seeker',
     'views/progress',
+    'views/play',
     'models/video',
 	'config'],
 	
-	function($, Server, AppView, MediaView, ShowingView, MediumLoadingView, PlayerView, SeekerView, ProgressView, Video) {
+	function(Server, AppView, MediaView, ShowingView, MediumLoadingView, PlayerView, SeekerView, ProgressView, PlayView, Video) {
 		var App = function() {
 			var self = this;
 			
@@ -34,6 +34,9 @@ define([
                 
                 self.views.progress = new ProgressView({model: self.models.video});
                 self.views.progress.render();
+                
+                self.views.play = new PlayView({model: self.models.video});
+                self.views.play.render();
                 
 				self.views.media = new MediaView({models: self.models, collection: self.collections.media, sections: self.collections.sections});
 				self.views.media.render();

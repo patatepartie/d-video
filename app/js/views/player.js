@@ -10,6 +10,7 @@ define(['backbone'], function(Backbone) {
 		initialize: function(options) {
             this.model.on('change:url', this.loadMedium, this);
             this.model.on('change:currentTime', this.changeCurrentTime, this);
+            this.model.on('change:playing', this.togglePlaying, this);
 		},
         
         loadMedium: function() {
@@ -19,6 +20,14 @@ define(['backbone'], function(Backbone) {
         
         changeCurrentTime: function() {
             this.el.currentTime = this.model.get('currentTime');
+        },
+        
+        togglePlaying: function() {
+            if (this.model.get('playing')) {
+                this.el.play();
+            } else {
+                this.el.pause();
+            }
         },
         
         onTimeUpdate: function () {

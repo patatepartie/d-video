@@ -213,14 +213,6 @@ define(['backbone', 'underscore', 'text!templates/app.html', 'models/section', '
 				}
 			});
 
-			$("#play").click(function() {
-				if (video.paused) {
-					video.play();
-				} else {
-					video.pause();
-				}
-			});
-			
 			return this;
 		}
 	});

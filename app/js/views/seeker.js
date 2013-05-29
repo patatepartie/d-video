@@ -23,7 +23,6 @@ define(['backbone'], function(Backbone) {
         },
         
         onSlide: function(event, ui) {
-            console.log("Sliding to %d", ui.value);
             this.model.set({currentTime: ui.value});
         }
 	});
