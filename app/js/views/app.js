@@ -81,22 +81,9 @@ define(['text!templates/app.html', 'models/section', 'jquery.ui', 'jquery.jqtree
 			
 			$el.html(self.template);
 			
-			// $("#videoFile").click(function(event) {
-			// 	$("#videoChooser").click();
-			// 	event.preventDefault();
-			// });
-
 			video = $("#video1").get(0);
-			// $("#videoChooser").on("change", function(event) {
-			// 	var videoFile = event.target.files[0];
-			// 	video.src = window.URL.createObjectURL(videoFile);
-			// 	$("#mediaList").show();
-			// });
 			
-			$("#mediaList").hide();
-			
-			
-			$("#chapterList")
+            $("#chapterList")
 			.tree({
 				data: [],
 				autoOpen: true,

@@ -20,7 +20,6 @@ define([], function() {
                 mediumUrl = window.URL.createObjectURL(mediumFile);
                 
             this.model.set({url: mediumUrl});
-            // $("#mediaList").show();
         }
 	});
 	

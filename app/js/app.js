@@ -5,12 +5,11 @@ define([
 	'views/media',
     'views/showing',
     'views/mediumLoader',
-    'views/medium',
-	'models/medium',
+    'views/player',
     'models/video',
 	'config'],
 	
-	function($, Server, AppView, MediaView, ShowingView, MediumLoadingView, MediumView, Medium, Video) {
+	function($, Server, AppView, MediaView, ShowingView, MediumLoadingView, PlayerView, Video) {
 		var App = function() {
 			var self = this;
 			
@@ -25,7 +24,7 @@ define([
                 self.views.videoLoader = new MediumLoadingView({model: self.models.video});
                 self.views.videoLoader.render();
                 
-                self.views.video = new MediumView({model: self.models.video});
+                self.views.video = new PlayerView({model: self.models.video});
                 self.views.video.render();
 				
 				self.views.media = new MediaView({models: self.models, collection: self.collections.media, sections: self.collections.sections});
