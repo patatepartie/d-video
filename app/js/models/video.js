@@ -3,7 +3,9 @@ define(function() {
         defaults: {
             playing: false,
             currentTime: 0,
-            duration: 0
+            seekedTime: 0,
+            duration: 0,
+            speed: 1
         },
         
         togglePlay: function() {

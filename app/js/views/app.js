@@ -201,18 +201,6 @@ define(['backbone', 'underscore', 'text!templates/app.html', 'models/section', '
 				$("#interval").slider("option", "values", [0, video.duration]);
 			});
 						
-			$("#speed").slider({
-				orientation: "vertical",
-				range: "min",
-				min: 0,
-				max: 3,
-				step: 0.5,
-				value: 1,
-				slide: function( event, ui ) {
-					video.playbackRate = ui.value;
-				}
-			});
-
 			return this;
 		}
 	});

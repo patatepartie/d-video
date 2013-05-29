@@ -8,10 +8,11 @@ define([
     'views/seeker',
     'views/progress',
     'views/play',
+    'views/speed',
     'models/video',
 	'config'],
 	
-	function(Server, AppView, MediaView, ShowingView, MediumLoadingView, PlayerView, SeekerView, ProgressView, PlayView, Video) {
+	function(Server, AppView, MediaView, ShowingView, MediumLoadingView, PlayerView, SeekerView, ProgressView, PlayView, SpeedView, Video) {
 		var App = function() {
 			var self = this;
 			
@@ -37,6 +38,9 @@ define([
                 
                 self.views.play = new PlayView({model: self.models.video});
                 self.views.play.render();
+                
+                self.views.speed = new SpeedView({model: self.models.video});
+                self.views.speed.render();
                 
 				self.views.media = new MediaView({models: self.models, collection: self.collections.media, sections: self.collections.sections});
 				self.views.media.render();

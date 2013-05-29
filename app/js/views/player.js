@@ -11,6 +11,7 @@ define(['backbone'], function(Backbone) {
             this.model.on('change:url', this.loadMedium, this);
             this.model.on('change:seekedTime', this.changeCurrentTime, this);
             this.model.on('change:playing', this.togglePlaying, this);
+            this.model.on('change:speed', this.changeSpeed, this);
 		},
         
         loadMedium: function() {
@@ -20,6 +21,10 @@ define(['backbone'], function(Backbone) {
         
         changeCurrentTime: function() {
             this.el.currentTime = this.model.get('seekedTime');
+        },
+        
+        changeSpeed: function() {
+            this.el.playbackRate = this.model.get('speed');
         },
         
         togglePlaying: function() {
@@ -38,6 +43,7 @@ define(['backbone'], function(Backbone) {
         onDurationChange: function () {
             var duration = this.el.duration;			
 			this.model.set({duration: duration});
+            this.model.set({playing: false});
 		}
 	});
 	
