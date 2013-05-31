@@ -24,6 +24,7 @@ requirejs.config({
 	}
 });
 
-require(['app'], function(App) {
+require(['backbone', 'app2'], function(Backbone, App) {
 	window.dVideo = new App();
+    Backbone.history.start();
 });

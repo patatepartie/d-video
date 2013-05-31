@@ -1,5 +1,5 @@
-define(function() {
-	var Video = window.Backbone.Model.extend({
+define(['backbone'], function(Backbone) {
+	var MediaContent = Backbone.Model.extend({
         defaults: {
             playing: false,
             currentTime: 0,
@@ -13,5 +13,5 @@ define(function() {
         }
 	});
 	
-	return Video;
+	return MediaContent;
 });
