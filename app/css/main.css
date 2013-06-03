@@ -24,6 +24,12 @@
 	float: left;
 }
 
+#content {
+    float: left;
+    width: 720px;
+    height: 358px;
+}
+
 #play {
 	float: left;
 }

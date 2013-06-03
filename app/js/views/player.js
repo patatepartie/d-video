@@ -1,22 +1,19 @@
 define(['backbone'], function(Backbone) {
 	var PlayerView = Backbone.View.extend({
-		el: '#video1',
-        
         events: {
             'timeupdate': 'onTimeUpdate',
             'durationchange': 'onDurationChange'
         },
 				
 		initialize: function(options) {
-            this.model.on('change:url', this.loadMedium, this);
-            this.model.on('change:seekedTime', this.changeCurrentTime, this);
-            this.model.on('change:playing', this.togglePlaying, this);
-            this.model.on('change:speed', this.changeSpeed, this);
+            this.listenTo(this.model, 'change:url', this.loadMedium);
+            this.listenTo(this.model, 'change:seekedTime', this.changeCurrentTime);
+            this.listenTo(this.model, 'change:playing', this.togglePlaying);
+            this.listenTo(this.model, 'change:speed', this.changeSpeed);
 		},
         
         loadMedium: function() {
-            var medium = this.$el.get(0);
-            medium.src = this.model.get('url');
+            this.el.src = this.model.get('url');
         },
         
         changeCurrentTime: function() {

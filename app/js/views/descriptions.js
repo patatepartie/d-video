@@ -19,6 +19,10 @@ define([
         var DescriptionsListView = window.Backbone.View.extend({
             tagName:'select',
             
+            initialize: function () {
+                this.listenTo(this.collection, "reset", this.render);
+            },
+            
             render: function() {
                 var self = this;
                 
