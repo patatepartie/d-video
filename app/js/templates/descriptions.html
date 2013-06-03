@@ -1,0 +1,5 @@
+<select>
+<% _(descriptions).each(function(description) { %>
+    <option value="<%= description.id %>"><%= description.title %></option>
+<% }); %>
+</select>

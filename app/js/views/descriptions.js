@@ -1,7 +1,7 @@
 define([
     'backbone', 
     'underscore', 
-    'text!templates/description.html'],
+    'text!templates/descriptions.html'],
     
     function(Backbone, _, itemTemplateFile) {
         var DescriptionsListItemView = window.Backbone.View.extend({
@@ -17,18 +17,19 @@ define([
         });
         
         var DescriptionsListView = window.Backbone.View.extend({
-            tagName:'select',
+            // tagName:'select',
+            template: _.template(itemTemplateFile),
             
             initialize: function () {
                 this.listenTo(this.collection, "reset", this.render);
             },
             
             render: function() {
-                var self = this;
-                
-                _.each(this.collection.models, function (description) {
-                    self.$el.append(new DescriptionsListItemView({model: description}).render().el);
-                });
+                // var self = this;
+                this.$el.html(this.template({descriptions: this.collection.toJSON()}));
+                // _.each(this.collection.models, function (description) {
+                //     self.$el.append(new DescriptionsListItemView({model: description}).render().el);
+                // });
                 
                 return this;    
             }        

@@ -5,8 +5,7 @@ define([
     'views/descriptions',
     'views/player',
     'models/content', 
-    'collections/descriptions',
-    'config'],
+    'collections/descriptions'],
     
     function(Backbone, $, ContentLoadingView, DescriptionsListView, PlayerView, Content, DescriptionsList) {
 		var AppRouter = Backbone.Router.extend({
@@ -31,7 +30,7 @@ define([
                 
                 this.collections.descriptionsList = new DescriptionsList();
                 this.collections.descriptionsList.fetch({success: function() {
-                    $('#descriptionsList').html(new DescriptionsListView({collection: self.collections.descriptionsList}).render().el);
+                    this.views.descriptions = new DescriptionsListView({el: '#descriptionsList',collection: self.collections.descriptionsList}).render();
                 }});                
             }
 		});
