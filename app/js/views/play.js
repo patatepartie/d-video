@@ -1,8 +1,6 @@
 define(['backbone'], function(Backbone) {
 	var PlayView = Backbone.View.extend({
-		el: '#play',
-        
-        events: {
+		events: {
             'click': 'onClick'
         },
 				

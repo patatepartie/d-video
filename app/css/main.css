@@ -30,13 +30,14 @@
     height: 358px;
 }
 
-#play {
+#player .play {
 	float: left;
 }
 
-#seeker {
-	width: 650px; 
-	float: left;
+#player .seeker {
+	width: 650px;
+    float: left;
+    border-style: solid;
 }
 
 .doubleSelected {

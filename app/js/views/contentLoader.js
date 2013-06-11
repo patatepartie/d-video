@@ -4,7 +4,7 @@ define(['backbone', 'underscore', 'text!templates/contentLoader.html'], function
         
 		events: {
 			'click .mediaFile': 'linkClicked',
-            'change .mediaFileChooser': 'chooserClicked',
+            'change .mediaFileChooser': 'chooserClicked'
 		},
 		
         render: function() {
