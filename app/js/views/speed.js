@@ -1,7 +1,5 @@
-define(['backbone'], function(Backbone) {
+define(['backbone', 'jquery.ui'], function(Backbone) {
 	var SpeedView = Backbone.View.extend({
-		el: '#speed',
-        
         events: {
             'slide': 'onSlide'
         },
@@ -16,7 +14,7 @@ define(['backbone'], function(Backbone) {
 				value: 1,
                 disabled: true});
                 
-            this.model.on('change:duration', this.enable, this);
+            this.listenTo(this.model, 'change:duration', this.enable);
 		},
     
         enable: function() {

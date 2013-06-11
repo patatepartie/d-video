@@ -22,9 +22,9 @@ define([
             },
             
             selectedDescriptionChanged: function() {
-                var selectedMediumId = this.$el.find('select').val(),
-                selectedMedium = this.collection.findById(selectedMediumId);
-                Backbone.trigger('medium:selected', selectedMedium);
+                var selectedDescriptionId = this.$el.find('select').val();
+                console.log(selectedDescriptionId);
+                Backbone.trigger('description:selected', selectedDescriptionId);
             }
         });
         
