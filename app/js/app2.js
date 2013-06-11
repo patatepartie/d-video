@@ -5,10 +5,12 @@ define([
     'views/descriptions',
     'views/player',
     'views/play',
+    'views/seeker',
+    'views/progress',
     'models/content', 
     'collections/descriptions'],
     
-    function(Backbone, $, ContentLoadingView, DescriptionsListView, PlayerView, PlayControlView, Content, DescriptionsList) {
+    function(Backbone, $, ContentLoadingView, DescriptionsListView, PlayerView, PlayControlView, SeekerView, ProgressView, Content, DescriptionsList) {
 		var AppRouter = Backbone.Router.extend({
             routes: {
                 "": "descriptionsLoading",
@@ -27,6 +29,8 @@ define([
                 this.views.descriptions = new DescriptionsListView({el: '#descriptionsList', collection: this.collections.descriptionsList}).render();
                 this.views.player = new PlayerView({el: '#content', model: this.models.content}).render();
                 this.views.playControl = new PlayControlView({el: '#player .play', model: this.models.content}).render();
+                this.views.seeker = new SeekerView({el: '#player .seeker', model: this.models.content}).render();
+                this.views.progress = new ProgressView({el: '#player .current', model: this.models.content}).render();
                 // Load other static contents (media content view ?)
             },
             

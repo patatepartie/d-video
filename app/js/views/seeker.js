@@ -1,19 +1,17 @@
-define(['backbone'], function(Backbone) {
+define(['backbone', 'jquery.ui'], function(Backbone) {
 	var SeekerView = Backbone.View.extend({
-		el: '#seeker',
-        
         events: {
             'slide': 'onSlide'
         },
 				
 		initialize: function(options) {
             this.$el.slider({value: 0, disabled: true});
-            this.model.on('change:currentTime', this.moveSeeker, this);
-            this.model.on('change:duration', this.changeLength, this);
+            this.listenTo(this.model, 'change:currentTime', this.moveSeeker);
+            this.listenTo(this.model, 'change:duration', this.changeLength);
 		},
         
         moveSeeker: function() {
-            this.$el.slider("value", this.model.get('seekedTime'));
+            this.$el.slider("value", this.model.get('currentTime'));
         },
         
         changeLength: function() {
@@ -23,7 +21,7 @@ define(['backbone'], function(Backbone) {
         },
         
         onSlide: function(event, ui) {
-            this.model.set({currentTime: ui.value});
+            this.model.set({seekedTime: ui.value});
         }
 	});
 	

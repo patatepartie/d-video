@@ -8,10 +8,8 @@ define(['backbone'], function(Backbone) {
 	}
     
 	var ProgressView = Backbone.View.extend({
-		el: '#current',
-        
-        initialize: function(options) {
-            this.model.on('change:currentTime', this.updateTime, this);
+		initialize: function(options) {
+            this.listenTo(this.model, 'change:currentTime', this.updateTime);
 		},
         
         updateTime: function() {

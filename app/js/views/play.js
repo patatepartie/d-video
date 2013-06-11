@@ -6,7 +6,7 @@ define(['backbone'], function(Backbone) {
 				
 		initialize: function(options) {
             this.$el.attr("disabled", "disabled");
-            this.model.on('change:url', this.enable, this);
+            this.listenTo(this.model, 'change:url', this.enable);
 		},
         
         onClick: function(event) {
