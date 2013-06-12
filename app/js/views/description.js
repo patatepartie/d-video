@@ -1,5 +1,5 @@
 define(['backbone', 'underscore', 'jquery.jqtree'], function(Backbone, _) {
-	function convertMediumtoTree(description, sections) {
+	function growTreeFrom(description, sections) {
 		var root = {
 			id: description.get('id'),
 			label: description.get('title'),
@@ -25,6 +25,8 @@ define(['backbone', 'underscore', 'jquery.jqtree'], function(Backbone, _) {
 	
 	var DescriptionView = Backbone.View.extend({
 		events: {
+            'tree.select': 'sectionSelected',
+            'tree.contextmenu': 'subSectionSelected',
 		},
 		
 		initialize: function() {
@@ -38,10 +40,34 @@ define(['backbone', 'underscore', 'jquery.jqtree'], function(Backbone, _) {
 		},
 		
 		render: function() {
-            this.$el.tree("loadData", convertMediumtoTree(this.model, this.collection));
+            this.$el.tree("loadData", growTreeFrom(this.model, this.collection));
 			
 			return this;
-		}		
+		},
+        
+        sectionSelected: function(event) {
+            if (this.rightSelected) {
+                $(this.rightSelected.element).find('.jqtree-title').removeClass("rightSelected");
+            }
+            
+            console.log("Selected section %s", event.node.id);
+        },
+        
+        subSectionSelected: function(event) {
+            var sectionId = event.node.id;
+            
+            if (this.rightSelected) {
+                $(this.rightSelected.element).find('.jqtree-title').removeClass("rightSelected");
+			}
+            
+            if (sectionId === this.model.get('id')) {
+				this.$el.tree("selectNode", event.node);
+			} else {
+				this.rightSelected = event.node;
+				$(this.rightSelected.element).find('.jqtree-title:first').addClass("rightSelected");
+			}
+            console.log("Selected sub section %s", event.node.id);
+        },
 	});
 	
 	return DescriptionView;
