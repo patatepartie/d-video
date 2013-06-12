@@ -3,68 +3,73 @@ var express = require('express'),
 	media = [
 		{
             "id": "revspeed-2009-09",
-            "title": "Revspeed-0909",
+            "title": "Revspeed 0909",
             "duration" : "03:26:16"
         },
         {
             "id": "revspeed-2009-10",
-            "title": "Revspeed-0910",
+            "title": "Revspeed 0910",
             "duration" : "03:26:16"
         }
 	],
-	sections = [
-		{
-			"id": "0",
-			"parent": "revspeed-2009-09",
-			"title" : "Ebisu",
-			"description" : "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
-			"start" : "00:00:00",
-			"end" : "01:33:33"
-		}, {
-			"id": "1",
-			"parent": "revspeed-2009-09",
-			"title" : "Tsukuba Nismo",
-			"start" : "01:35:19",
-			"end" : "01:53:56"
-		}, {
-			"id": "2",
-			"parent": "revspeed-2009-09",
-			"title" : "Tsukuba Interclub",
-			"description" : "SCCJ History Car Race",
-			"start" : "01:57:56",
-			"end" : "02:14:24"
-		}, {
-			"id": "3",
-			"parent": "revspeed-2009-09",
-			"title" : "Okayama",
-			"start" : "02:38:00",
-			"end" : "02:51:48"
-		}, {
-			"id": "3_0",
-			"parent": "3",
-			"title" : "NSX",
-			"start" : "02:38:00",
-			"end" : "02:46:07"
-		}, {
-			"id": "3_1",
-			"parent": "3",
-			"title" : "Integra",
-			"start" : "02:46:08",
-			"end" : "02:51:48"
-		}, {
-			"id": "3_0_0",
-			"parent": "3_0",
-			"title" : "NSX 2",
-			"start" : "02:38:00",
-			"end" : "02:40:00"
-		}, {
-			"id": "4",
-			"parent": "revspeed-2009-10",
-			"title" : "Other",
-			"start" : "00:00:00",
-			"end" : "01:33:33"
-		}
-	],
+    sectionsByMedia = {
+        "revspeed-2009-09": [
+            {
+                "id": "0",
+                "parentId": "revspeed-2009-09",
+                "title" : "Ebisu",
+                "description" : "Oi-san and Moshieu explains Ebisu circuit to X and Yamanda-san",
+                "start" : "00:00:00",
+                "end" : "01:33:33"
+            }, {
+                "id": "1",
+                "parentId": "revspeed-2009-09",
+                "title" : "Tsukuba Nismo",
+                "start" : "01:35:19",
+                "end" : "01:53:56"
+            }, {
+                "id": "2",
+                "parentId": "revspeed-2009-09",
+                "title" : "Tsukuba Interclub",
+                "description" : "SCCJ History Car Race",
+                "start" : "01:57:56",
+                "end" : "02:14:24"
+            }, {
+                "id": "3",
+                "parentId": "revspeed-2009-09",
+                "title" : "Okayama",
+                "start" : "02:38:00",
+                "end" : "02:51:48"
+            }, {
+                "id": "3_0",
+                "parentId": "3",
+                "title" : "NSX",
+                "start" : "02:38:00",
+                "end" : "02:46:07"
+            }, {
+                "id": "3_0_0",
+                "parentId": "3_0",
+                "title" : "NSX 2",
+                "start" : "02:38:00",
+                "end" : "02:40:00"
+            }, {
+                "id": "3_1",
+                "parentId": "3",
+                "title" : "Integra",
+                "start" : "02:46:08",
+                "end" : "02:51:48"
+            }
+        ],
+        "revspeed-2009-10": [
+            {
+                "id": "4",
+                "parentId": "revspeed-2009-10",
+                "title" : "Other",
+                "start" : "00:00:00",
+                "end" : "01:33:33"
+            }
+        ]
+    }	,
     port = process.env.PORT || 8880,
     ip = process.env.IP || 'localhost';
 
@@ -80,25 +85,10 @@ app.get('/media', function(req, res) {
 	
 	res.send(media);
 });
-app.get('/sections', function(req, res) {
-	console.log('Request: sections');
-	res.setHeader('Content-Type', 'application/json');
-	
-	res.send(sections);
-});
 app.get('/media/:id/chapters', function(req, res) {
-	var sectionTree;
-	
 	console.log('Request: chapters for medium ' + req.params.id);
-	
-	res.setHeader('Content-Type', 'application/json');
-	sectionTree = sections.filter(function(section) {
-		return section.parent === req.params.id;
-	});
-	
-	appendSubSections(sectionTree);
 		
-	res.send(sectionTree);
+	res.send(sectionsByMedia[req.params.id]);
 });
 app.post('/media/:mediumId/chapters/:chapterId', function(req, res) {
 	var mediumId = req.params.mediumId,

@@ -1,36 +1,27 @@
 define(['backbone', 'underscore', 'jquery.jqtree'], function(Backbone, _) {
-	// function convertMediumtoTree(medium) {
-	// 	var tree = [{
-	// 		label: 'Media',
-	// 		id: "-1"
-	// 	}];
+	function convertMediumtoTree(description, sections) {
+		var root = {
+			id: description.get('id'),
+			label: description.get('title'),
+            children: []
+		}, 
+        nodesStack = [root];
 	
-	// 	tree[0].children = medium.sections.map(function(section) {
-	// 		return convertSubSectionToNode(section);
-	// 	});
+        sections.each(function(section) {
+            var newNode = {id: section.get('id'), label: section.get('title'), children: []},
+                currentNode = nodesStack.pop();
+                
+            while (section.get('parentId') !== currentNode.id) {
+                currentNode = nodesStack.pop();
+            }
+            
+            currentNode.children.push(newNode);
+            nodesStack.push(currentNode);
+            nodesStack.push(newNode);
+		});
 	
-	// 	return tree;
-	// }
-	
-	// function convertSubSectionToNode(section) {
-	// 	var node = {
-	// 			label: section.get("title"),
-	// 			id: section.get("id")
-	// 		};
-	// 		if (section.get("sections")) {
-	// 			node.children = section.get("sections").map(function(section) {
-	// 				return convertSubSectionToNode(section);
-	// 			});
-	// 		}
-	
-	// 	return node;
-	// }
-	
-	// function updateTree(tree, text) {
-	// 	$("#chapterList").tree("loadData", tree);
-		
-	// 	$("#currentlyShowing").text(text);
-	// }
+		return [root];
+	}
 	
 	var DescriptionView = Backbone.View.extend({
 		events: {
@@ -47,10 +38,7 @@ define(['backbone', 'underscore', 'jquery.jqtree'], function(Backbone, _) {
 		},
 		
 		render: function() {
-			var self = this,
-				$el = $(self.el);
-			
-			console.log(this.collection);
+            this.$el.tree("loadData", convertMediumtoTree(this.model, this.collection));
 			
 			return this;
 		}		

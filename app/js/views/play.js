@@ -1,5 +1,8 @@
-define(['backbone'], function(Backbone) {
+define(['backbone', 'underscore', 'text!templates/play.html'], function(Backbone, _, templateFile) {
 	var PlayView = Backbone.View.extend({
+        template: _.template(templateFile),
+        tagName: 'button',
+        
 		events: {
             'click': 'onClick'
         },
@@ -8,6 +11,12 @@ define(['backbone'], function(Backbone) {
             this.$el.attr("disabled", "disabled");
             this.listenTo(this.model, 'change:url', this.enable);
 		},
+        
+        render: function() {
+            this.$el.html(this.template());
+            
+            return this;
+        },
         
         onClick: function(event) {
             this.model.togglePlay();

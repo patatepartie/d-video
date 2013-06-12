@@ -11,9 +11,9 @@ define([
     'views/description',
     'models/content', 
     'collections/descriptions',
-    'collections/description'],
+    'collections/sections'],
     
-    function(Backbone, $, ContentLoadingView, DescriptionsListView, PlayerView, PlayControlView, SeekerView, ProgressView, SpeedView, DescriptionView, Content, DescriptionsList, Description) {
+    function(Backbone, $, ContentLoadingView, DescriptionsListView, PlayerView, PlayControlView, SeekerView, ProgressView, SpeedView, DescriptionView, Content, DescriptionsList, Sections) {
 		var AppRouter = Backbone.Router.extend({
             routes: {
                 "": "descriptionsLoading",
@@ -28,17 +28,15 @@ define([
                 this.models.content = new Content();
                 this.collections.descriptionsList = new DescriptionsList();
                 
-                this.views.contentLoading = new ContentLoadingView({el: "#mediaFileLoader", model: this.models.content}).render();
-                this.views.descriptions = new DescriptionsListView({el: '#descriptionsList', collection: this.collections.descriptionsList}).render();
-                this.views.player = new PlayerView({el: '#content', model: this.models.content}).render();
-                this.views.playControl = new PlayControlView({el: '#player .play', model: this.models.content}).render();
-                this.views.seeker = new SeekerView({el: '#player .seeker', model: this.models.content}).render();
-                this.views.progress = new ProgressView({el: '#player .progress', model: this.models.content}).render();
-                this.views.speed = new SpeedView({el: '#player .speed', model: this.models.content}).render();
-                
+                $('#mediaFileLoader').html(new ContentLoadingView({model: this.models.content}).render().el);
+                $('#descriptionsList').html(new DescriptionsListView({collection: this.collections.descriptionsList}).render().el);
+                $('#content').html(new PlayerView({model: this.models.content}).render().el);
+                $('#player .play').html(new PlayControlView({model: this.models.content}).render().el);
+                $('#player .seeker').html(new SeekerView({model: this.models.content}).render().el);
+                $('#player .progress').html(new ProgressView({model: this.models.content}).render().el);
+                $('#player .speed').html(new SpeedView({model: this.models.content}).render().el);
+
                 Backbone.on('description:selected', this.showDescription, this);
-                
-                // Load other static contents (media content view ?)
             },
             
             descriptionsLoading: function() {
@@ -51,18 +49,30 @@ define([
                 }});                
             },
             
-            showDescription: function(descriptionId) {
-                var self = this;
+            showDescription: function(description) {
+                var self = this,
+                    descriptionId;
                 
                 if (self.views.description) {
                     self.views.description.remove();
+                    delete self.views.description;
                 }
                 
-                self.collections.currentDescription = new Description({mediumId: descriptionId});
+                if (description) {
+                    descriptionId = description.get('id');
+
+                    this.navigate("media/" + descriptionId);
+                    
+                    self.collections.currentSections = new Sections({descriptionId: descriptionId});
+                    
+                    self.collections.currentSections.fetch({success: function() {
+                        self.views.description = new DescriptionView({collection: self.collections.currentSections, model: description});
+                        $('#description .content').html(self.views.description.render().el);
+                    }});    
+                } else {
+                    this.navigate("media");
+                }
                 
-                self.collections.currentDescription.fetch({success: function() {
-                    self.views.description = new DescriptionView({el: '#description', collection: self.collections.currentDescription}).render();    
-                }});                
             }
 		});
         

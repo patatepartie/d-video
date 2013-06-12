@@ -3,16 +3,16 @@ define([
     'underscore', 
     'text!templates/descriptions.html'],
     
-    function(Backbone, _, itemTemplateFile) {
+    function(Backbone, _, templateFile) {
         var DescriptionsListView = window.Backbone.View.extend({
-            template: _.template(itemTemplateFile),
+            template: _.template(templateFile),
             
             events: {
                 'change select': 'selectedDescriptionChanged'   
             },
             
             initialize: function () {
-                this.listenTo(this.collection, "reset", this.render);
+                this.listenTo(this.collection, 'reset', this.render);
             },
             
             render: function() {
@@ -22,9 +22,10 @@ define([
             },
             
             selectedDescriptionChanged: function() {
-                var selectedDescriptionId = this.$el.find('select').val();
-                console.log(selectedDescriptionId);
-                Backbone.trigger('description:selected', selectedDescriptionId);
+                var selectedDescriptionId = this.$el.find('select').val(),
+                    selectedDescription = this.collection.get(selectedDescriptionId);
+                
+                Backbone.trigger('description:selected', selectedDescription);
             }
         });
         

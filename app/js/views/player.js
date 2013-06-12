@@ -1,5 +1,8 @@
-define(['backbone'], function(Backbone) {
+define(['backbone', 'underscore', 'text!templates/player.html'], function(Backbone, _, templateFile) {
 	var PlayerView = Backbone.View.extend({
+        template: _.template(templateFile),
+        tagName: 'video',
+        
         events: {
             'timeupdate': 'onTimeUpdate',
             'durationchange': 'onDurationChange'
@@ -11,6 +14,12 @@ define(['backbone'], function(Backbone) {
             this.listenTo(this.model, 'change:playing', this.togglePlaying);
             this.listenTo(this.model, 'change:speed', this.changeSpeed);
 		},
+        
+        render: function() {
+            this.$el.html(this.template());
+            
+            return this;
+        },
         
         loadMedium: function() {
             this.el.src = this.model.get('url');
