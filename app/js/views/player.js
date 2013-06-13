@@ -48,8 +48,8 @@ define(['backbone', 'underscore', 'text!templates/player.html'], function(Backbo
         
         onDurationChange: function () {
             var duration = this.el.duration;			
-			this.model.set({duration: duration});
-            this.model.set({playing: false});
+
+            this.model.set({duration: duration, start: 0, end: duration, playing: false});
 		}
 	});
 	

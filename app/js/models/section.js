@@ -1,7 +1,7 @@
-define(function() {
+define(['backbone'], function(Backbone) {
     function timeToSeconds(time) {
         var components = time.split(":").map(function(item) {
-            return parseInt(item);
+            return parseInt(item, 10);
         });
         return ((components[0] * 60) + components[1]) * 60 + components[2]; 
     }
@@ -15,14 +15,13 @@ define(function() {
 			end: '00:00:00'
 		},
         
-        startAsSeconds: function() {
+        getStartInSeconds: function() {
             return timeToSeconds(this.get('start'));   
         },
-        endAsSeconds: function() {
+        
+        getEndInSeconds: function() {
             return timeToSeconds(this.get('end'));
         }
-        
-        
 	});
 	
 	return Section;

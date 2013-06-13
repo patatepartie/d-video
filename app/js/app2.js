@@ -66,7 +66,7 @@ define([
                     self.collections.currentSections = new Sections({descriptionId: descriptionId});
                     
                     self.collections.currentSections.fetch({success: function() {
-                        self.views.description = new DescriptionView({collection: self.collections.currentSections, model: description});
+                        self.views.description = new DescriptionView({collection: self.collections.currentSections, model: description, content: self.models.content});
                         $('#description .content').html(self.views.description.render().el);
                     }});    
                 } else {

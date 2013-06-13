@@ -8,6 +8,8 @@ define(['backbone', 'jquery.ui'], function(Backbone) {
             this.$el.slider({value: 0, disabled: true});
             this.listenTo(this.model, 'change:currentTime', this.moveSeeker);
             this.listenTo(this.model, 'change:duration', this.changeLength);
+            this.listenTo(this.model, 'change:start', this.changeStart);
+            this.listenTo(this.model, 'change:end', this.changeEnd);
 		},
         
         moveSeeker: function() {
@@ -16,8 +18,16 @@ define(['backbone', 'jquery.ui'], function(Backbone) {
         
         changeLength: function() {
             this.$el.slider("option", "disabled", false);
-            this.$el.slider("option", "min", 0);
-            this.$el.slider("option", "max", this.model.get('duration'));
+        },
+        
+        changeStart: function() {
+            this.$el.slider("option", "min", this.model.get('start'));
+            this.model.set({seekedTime: this.model.get('start')});
+        },
+        
+        changeEnd: function() {
+            this.$el.slider("option", "max", this.model.get('end'));
+            this.model.set({seekedTime: this.model.get('start')});
         },
         
         onSlide: function(event, ui) {

@@ -29,7 +29,9 @@ define(['backbone', 'underscore', 'jquery.jqtree'], function(Backbone, _) {
             'tree.contextmenu': 'subSectionSelected',
 		},
 		
-		initialize: function() {
+		initialize: function(options) {
+            this.content = options.content;
+            
             this.listenTo(this.collection, 'reset', this.render);
             
             this.$el.tree({
@@ -46,28 +48,48 @@ define(['backbone', 'underscore', 'jquery.jqtree'], function(Backbone, _) {
 		},
         
         sectionSelected: function(event) {
-            if (this.rightSelected) {
-                $(this.rightSelected.element).find('.jqtree-title').removeClass("rightSelected");
-            }
+            var sectionId = event.node.id, section;
             
-            console.log("Selected section %s", event.node.id);
+            this.removePreviouslyRightSelected();
+            
+            if (this.isRoot(sectionId)) {
+                this.content.set({start: 0, end: this.content.get('duration')});
+            } else {
+                section = this.collection.get(sectionId);
+                this.content.set({start: section.getStartInSeconds(), end: section.getEndInSeconds()});
+            }
         },
         
         subSectionSelected: function(event) {
             var sectionId = event.node.id;
             
+            this.removePreviouslyRightSelected();
+            
+            if (this.isRoot(sectionId)) {
+                this.selectRoot(event.node);
+			} else {
+				this.rightSelectNode(event.node);
+			}
+        },
+        
+        isRoot: function(sectionId) {
+            return sectionId === this.model.get('id');
+        },
+        
+        rightSelectNode: function(node) {
+            this.rightSelected = node;
+            $(this.rightSelected.element).find('.jqtree-title:first').addClass("rightSelected");
+        },
+        
+        selectRoot: function(root) {
+            this.$el.tree('selectNode', root);
+        },
+        
+        removePreviouslyRightSelected: function() {
             if (this.rightSelected) {
                 $(this.rightSelected.element).find('.jqtree-title').removeClass("rightSelected");
-			}
-            
-            if (sectionId === this.model.get('id')) {
-				this.$el.tree("selectNode", event.node);
-			} else {
-				this.rightSelected = event.node;
-				$(this.rightSelected.element).find('.jqtree-title:first').addClass("rightSelected");
-			}
-            console.log("Selected sub section %s", event.node.id);
-        },
+            }
+        }
 	});
 	
 	return DescriptionView;
