@@ -8,7 +8,6 @@ define(['backbone'], function(Backbone) {
     
 	var Section = Backbone.Model.extend({
 		defaults: {
-			id: '-1', 
 			title: '', 
 			description: '', 
 			start: '00:00:00', 

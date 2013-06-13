@@ -36,8 +36,7 @@ define(['backbone', 'underscore', 'jquery.jqtree'], function(Backbone, _) {
             
             this.$el.tree({
 				data: [],
-				autoOpen: true,
-				selectable: true
+				autoOpen: true
 			});
 		},
 		

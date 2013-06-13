@@ -5,6 +5,8 @@ define(['backbone'], function(Backbone) {
             currentTime: 0,
             seekedTime: 0,
             duration: 0,
+            start: 0,
+            end: 0,
             speed: 1
         },
         

@@ -42,8 +42,13 @@ define(['backbone', 'underscore', 'text!templates/player.html'], function(Backbo
         },
         
         onTimeUpdate: function () {
-			var time = this.el.currentTime;			
-			this.model.set({currentTime: time});
+			var time = this.el.currentTime;
+			
+            if (time <= this.model.get('end')) {
+                this.model.set({currentTime: time});    
+            } else {
+                this.model.set({seekedTime: this.model.get('start')});
+            }
 		},
         
         onDurationChange: function () {
