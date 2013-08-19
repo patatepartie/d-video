@@ -1,5 +1,9 @@
 db = Mongo::MongoClient.new(settings.db_host, settings.db_port).db(settings.db_name)
 
+get '/' do
+  haml :index
+end
+
 get '/api/media' do
   content_type :json
 
@@ -11,6 +15,7 @@ post '/api/media' do
   posted_data = JSON.parse(request.body.read)
 
   bson_id = db["media"].insert(posted_data.select {|key, value| key == "title"})
+
   created_http_response(bson_id)
 end
 
@@ -21,6 +26,7 @@ put '/api/media/:id' do
 
   attributes = posted_data.select {|key, value| key == "title"}
   db["media"].update({"_id" => bson_id}, attributes)
+
   updated_http_response(bson_id, attributes)
 end
 
