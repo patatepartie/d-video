@@ -1,7 +1,7 @@
-define(['backbone.localstorage', 'models/medium'], function(Medium) {
+define(['backbone', 'models/medium'], function(Backbone, Medium) {
 	var Media = Backbone.Collection.extend({
 		model: Medium,
-		localStorage: new Backbone.LocalStorage("media"),
+        url: '/media',
 
 		findById: function(mediumId) {
 			return this.find(function(medium) {
