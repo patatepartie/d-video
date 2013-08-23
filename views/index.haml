@@ -1,15 +1,18 @@
 !!! 5
 %head
-  %meta{'charset' => 'utf-8'}/
+  %meta{'charset' => 'utf-8'}
 
   %title='D-Video'
-  %meta{'name' => 'viewport', 'content' => 'width=device-width,initial-scale=1'}/
+  %meta{'name' => 'viewport', 'content' => 'width=device-width,initial-scale=1'}
 
-  %link{'rel' => 'stylesheet', 'href' => 'css/main.css'}/
+  %link{'rel' => 'stylesheet', 'href' => 'css/main.css'}
+  %script{'src'  => 'js/vendor/require.js', 'data-main' => 'js/main'}
 %body
-  %div#media
-    %div.list
+  %div#medium
+    %div.selection
+    %div.display
     %div.controls
-    	%span.edit !
-    	%span.del x
-    	%span.add +
+  %div#content
+    %div.selection
+    %div.display
+    %div.controls

@@ -1,9 +1,5 @@
 db = Mongo::MongoClient.new(settings.db_host, settings.db_port).db(settings.db_name)
 
-get '/' do
-  haml :index
-end
-
 get '/api/media' do
   content_type :json
 
@@ -34,6 +30,10 @@ delete '/api/media/:id' do
   db["media"].remove("_id" => to_bson_id(params[:id]))
 
   204
+end
+
+get '/*' do
+  haml :index
 end
 
 def created_http_response(id)

@@ -1,0 +1,46 @@
+#descriptions {
+	float: left;
+	width: 200px;
+	height: 850px;
+}
+
+#description {
+	height: 380px;
+	border-style: solid;
+	border-width: 1px;
+}
+
+#right {
+	float: left;
+	height: 850px;	
+}
+
+#mediaFileLoader .mediaFileChooser{
+	display: none;
+}
+
+#player .speed {
+	height: 340px;
+	float: left;
+}
+
+#content {
+    float: left;
+    width: 720px;
+    height: 358px;
+}
+
+#player .play {
+	float: left;
+}
+
+#player .seeker {
+	width: 650px;
+    float: left;
+}
+
+.rightSelected {
+	background:#ff0000; 
+	border:1px solid #99defd; 
+	padding:0 2px 0 1px;
+}
