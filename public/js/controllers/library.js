@@ -20,12 +20,8 @@ define([
       initialize: function () {
         Backbone.on( {
           "library:select_medium": this.selectMedium,
-          "library:edit_medium": this.showEditionView,
-          "library:delete_medium": this.showDeletionView,
-          "library:medium_edited": this.validateMediaEditing,
-          "library:medium_edition_cancelled": this.cancelMediaEditing,
-          "library:medium_deleted": this.validateMediaDeletion,
-          "library:medium_deletion_cancelled": this.cancelMediaDeletion
+          "library:edit_medium": this.editMedium,
+          "library:delete_medium": this.deleteMedium
         }, this);
 
         this.region = new Region({el: "#medium .selection"});
@@ -33,34 +29,6 @@ define([
         // Replace that by a bootstrap
         this.media = new Media();
         this.media.fetch({reset :true});
-      },
-
-      selectMedium: function(medium) {
-        this.selectedMedium = medium;
-      },
-
-      showEditionView: function(currentMedium) {
-        var medium = currentMedium || new Medium();
-
-        this.region.show(new MediumEditionView({model: medium}));
-      },
-
-      validateMediaEditing: function(medium) {
-        var self = this;
-
-        if (medium.isNew()) {
-          this.media.add(medium);
-        }
-
-        if (medium.hasChanged()) {
-          medium.save().done(function() {
-            self.showMediaView(medium)    
-          });
-        }        
-      },
-
-      cancelMediaEditing: function() {
-        this.showMediaView(this.selectedMedium);
       },
 
       showMediaView: function (medium) {
@@ -73,18 +41,38 @@ define([
         }
       },
 
-      showDeletionView: function (currentMedium) {
-        this.region.show(new MediumDeletionView({model: currentMedium}));
+      selectMedium: function(medium) {
+        this.selectedMedium = medium;
       },
 
-      validateMediaDeletion: function(medium) {
-        medium.destroy();
+      editMedium: function(currentMedium) {
+        var mediumEditing = this.region.show(new MediumEditionView({model: currentMedium || new Medium()}));
+        var self = this;
 
-        this.showMediaView();
+        mediumEditing.done(function(medium) {
+          if (medium.hasChanged()) {
+            medium.save().done(function() {
+              self.showMediaView(medium)    
+            });
+
+            self.media.add(medium);
+          }
+        }).fail(function() {
+          self.showMediaView(this.selectedMedium);
+        });
       },
 
-      cancelMediaDeletion: function() {
-        this.showMediaView(this.selectedMedium);
+      deleteMedium: function (currentMedium) {
+        var mediumDeleting = this.region.show(new MediumDeletionView({model: currentMedium}));
+        var self = this;
+
+        mediumDeleting.done(function(medium) {
+          medium.destroy();
+
+          self.showMediaView();
+        }).fail(function() {
+          self.showMediaView(this.selectedMedium);
+        });
       }
     });
 

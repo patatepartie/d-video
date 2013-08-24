@@ -11,6 +11,14 @@ define([
         "click .controls [name=cancel]": "deletionCancelled"
       },
 
+      initialize: function() {
+        this.result = Backbone.$.Deferred();
+      },
+
+      promise: function() {
+        return this.result.promise();
+      },
+
       render: function () {
         this.$el.html(this.template(this.model.attributes));
 
@@ -18,11 +26,11 @@ define([
       },
 
       deletionValidated: function () {
-        Backbone.trigger('library:medium_deleted', this.model);
+        this.result.resolve(this.model);
       },
 
       deletionCancelled: function () {
-        Backbone.trigger('library:medium_deletion_cancelled');
+        this.result.reject();
       }
     });
 

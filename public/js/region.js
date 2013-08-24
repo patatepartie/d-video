@@ -25,6 +25,10 @@ define([
 
         this.currentView = view;
         this.$el.html(this.currentView.render().el);
+
+        if (this.currentView.promise) {
+          return this.currentView.promise();
+        }
       }
     });
 

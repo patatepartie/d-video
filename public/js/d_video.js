@@ -4,6 +4,8 @@ define(['backbone', 'router'], function(Backbone, Router) {
       start: function() {
         this.router = new Router();
         
+        _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
+        
         Backbone.history.start({pushState: true});
       }
     }

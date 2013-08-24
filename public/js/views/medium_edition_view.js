@@ -11,6 +11,15 @@ define([
         "click .controls [name=cancel]": "editCancelled"
       },
 
+      initialize: function() {
+        this.result = Backbone.$.Deferred();
+        Backbone.Validation.bind(this);
+      },
+
+      promise: function() {
+        return this.result.promise();
+      },
+
       render: function () {
         this.$el.html(this.template(this.model.attributes));
 
@@ -21,11 +30,15 @@ define([
         var newTitle = this.$el.find('[name=title]').val();
         this.model.set({title: newTitle});
 
-        Backbone.trigger('library:medium_edited', this.model);
+        if (this.model.isValid(true)) {
+          this.result.resolve(this.model);
+        } else {
+          this.result.reject();
+        }
       },
 
       editCancelled: function () {
-        Backbone.trigger('library:medium_edition_cancelled');
+        this.result.reject();
       }
     });
 
