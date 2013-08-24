@@ -1,13 +1,11 @@
-<div class="select">
-	<select>
-		<option value="-1">Choose one...</option>
-    {{#media}}
-      <option value="{{id}}">{{title}}</option>
-    {{/media}}
-	</select>
-</div>
+<select>
+  <option value="-1">Choose one...</option>
+  {{#media}}
+    <option value="{{id}}">{{title}}</option>
+  {{/media}}
+</select>
 <div class="controls">
-	<button>!</button>
-	<button>+</button>
-	<button>-</button>
+  <button name="edit">!</button>
+  <button name="add">+</button>
+  <button name="delete">-</button>
 </div>

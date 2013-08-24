@@ -1,9 +1,9 @@
 define(['backbone', 'models/medium'], function(Backbone, Medium) {
-  var media = Backbone.Collection.extend({
+  var Media = Backbone.Collection.extend({
     model: Medium,
     url: '/api/media',
     sort: "title"
   });
 
-  return media;
+  return Media;
 });
