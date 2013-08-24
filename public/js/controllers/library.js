@@ -1,12 +1,12 @@
 define([
-  'backbone', 'jquery', 
+  'backbone', 'region', 
   'views/medium_selection_view', 
   'views/medium_edition_view',
   'views/medium_deletion_view',
   'collections/media',
   'models/medium'], 
 
-  function(Backbone, $, MediumSelectionView, MediumEditionView, MediumDeletionView, Media, Medium) {
+  function(Backbone, Region, MediumSelectionView, MediumEditionView, MediumDeletionView, Media, Medium) {
     var Library = function() {
       Backbone.on( {
           "library:select_medium": this.selectMedium,
@@ -18,7 +18,7 @@ define([
           "library:medium_deletion_cancelled": this.cancelMediaDeletion
         }, this);
 
-      this.mediumSelectionRegion = $("#medium .selection")
+      this.region = new Region({el: "#medium .selection"});
 
       // Replace that by a bootstrap
       this.media = new Media();
@@ -31,10 +31,8 @@ define([
 
     Library.prototype.showEditionView = function (currentMedium) {
       var medium = currentMedium || new Medium();
-      this.selectionView.remove();
-      this.selectionView = new MediumEditionView({model: medium});
 
-      this.mediumSelectionRegion.html(this.selectionView.render().el);
+      this.region.show(new MediumEditionView({model: medium}));
     },
 
     Library.prototype.validateMediaEditing = function(medium) {
@@ -56,12 +54,9 @@ define([
     },
 
     Library.prototype.showMediaView = function (medium) {
-      if (this.selectionView) {
-        this.selectionView.remove();
-      }
+      var selectionView = new MediumSelectionView({collection: this.media});
 
-      this.selectionView = new MediumSelectionView({collection: this.media});
-      this.mediumSelectionRegion.html(this.selectionView.render().el);
+      this.region.show(selectionView);
 
       if (medium) {
         this.selectionView.selectMedium(medium);        
@@ -69,10 +64,7 @@ define([
     },
 
     Library.prototype.showDeletionView = function (currentMedium) {
-      this.selectionView.remove();
-      this.selectionView = new MediumDeletionView({model: currentMedium});
-
-      this.mediumSelectionRegion.html(this.selectionView.render().el);
+      this.region.show(new MediumDeletionView({model: currentMedium}));
     },
 
     Library.prototype.validateMediaDeletion = function(medium) {
