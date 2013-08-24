@@ -1,11 +1,12 @@
 define([
   'backbone', 'jquery', 
   'views/medium_selection_view', 
-  'views/medium_edit_view',
+  'views/medium_edition_view',
+  'views/medium_deletion_view',
   'collections/media',
   'models/medium'], 
 
-  function(Backbone, $, MediumSelectionView, MediumEditView, Media, Medium) {
+  function(Backbone, $, MediumSelectionView, MediumEditionView, MediumDeletionView, Media, Medium) {
     var router = Backbone.Router.extend({
       routes: {
         "": "loadLayout"
@@ -13,10 +14,13 @@ define([
 
       initialize: function () {
         Backbone.on( {
-          "library:edit_medium": this.showEditView,
           "library:select_medium": this.selectMedium,
+          "library:edit_medium": this.showEditionView,
+          "library:delete_medium": this.showDeletionView,
           "library:medium_edited": this.validateMediaEditing,
-          "library:medium_edition_cancelled": this.cancelMediaEditing
+          "library:medium_edition_cancelled": this.cancelMediaEditing,
+          "library:medium_deleted": this.validateMediaDeletion,
+          "library:medium_deletion_cancelled": this.cancelMediaDeletion
         }, this);
 
         // Replace that by a bootstrap
@@ -36,10 +40,10 @@ define([
         this.selectedMedium = medium;
       },
 
-      showEditView: function (currentMedium) {
+      showEditionView: function (currentMedium) {
         var medium = currentMedium || new Medium();
         this.selectionView.remove();
-        this.selectionView = new MediumEditView({model: medium});
+        this.selectionView = new MediumEditionView({model: medium});
 
         this.mediumSelectionRegion.html(this.selectionView.render().el);
       },
@@ -67,7 +71,27 @@ define([
         this.selectionView = new MediumSelectionView({collection: this.media});
 
         this.mediumSelectionRegion.html(this.selectionView.render().el);
-        this.selectionView.selectMedium(medium);        
+
+        if (medium) {
+          this.selectionView.selectMedium(medium);        
+        }
+      },
+
+      showDeletionView: function (currentMedium) {
+        this.selectionView.remove();
+        this.selectionView = new MediumDeletionView({model: currentMedium});
+
+        this.mediumSelectionRegion.html(this.selectionView.render().el);
+      },
+
+      validateMediaDeletion: function(medium) {
+        medium.destroy();
+
+        this.showMediaView();
+      },
+
+      cancelMediaDeletion: function() {
+        this.showMediaView(this.selectedMedium);
       }
     });
 

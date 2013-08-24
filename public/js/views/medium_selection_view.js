@@ -7,9 +7,10 @@ define([
       template: Mustache.compile(template),
 
       events: {
-        "change select": "mediumSelected",
-        "click .controls [name=add]": "mediumCreationRequested",
-        "click .controls [name=edit]": "mediumEditionRequested"
+        "change select": "_mediumSelected",
+        "click .controls [name=add]": "_mediumCreationRequested",
+        "click .controls [name=edit]": "_mediumEditionRequested",
+        "click .controls [name=delete]": "_mediumDeletionRequested"
       },
 
       initialize: function () {
@@ -23,29 +24,58 @@ define([
       },
 
       selectMedium: function(medium) {
-        this.selectOption(medium.get('id'));
+        this.$el.find('select').val(medium.get('id')).change();
       },
 
-      selectOption: function(id) {
-        this.$el.find('select').val(id).change();
+      _mediumSelected: function(event) {
+        event.preventDefault();
+
+        this._getSelectedMedium().done(function (selectedMedium) {
+          Backbone.trigger('library:select_medium', selectedMedium);
+        }).fail(function() {
+          Backbone.trigger('library:select_medium');
+        });
       },
 
-      mediumSelected: function(event) {
-        var selectedId = this.$el.find('select').val();
-        Backbone.trigger('library:select_medium', this.collection.get(selectedId));
-      },
-
-      mediumCreationRequested: function (event) {
+      _mediumCreationRequested: function (event) {
         event.preventDefault();
 
         Backbone.trigger('library:edit_medium');
       },
 
-      mediumEditionRequested: function (event) {
+      _mediumEditionRequested: function (event) {
         event.preventDefault();
 
-        var selectedId = this.$el.find('select').val();
-        Backbone.trigger('library:edit_medium', this.collection.get(selectedId));
+        this._getSelectedMedium().done(function (selectedMedium) {
+          Backbone.trigger('library:edit_medium', selectedMedium);
+        });
+      },
+
+      _mediumDeletionRequested: function (event) {
+        event.preventDefault();
+
+        this._getSelectedMedium().done(function (selectedMedium) {
+          Backbone.trigger('library:delete_medium', selectedMedium);
+        });
+      },
+
+      _findSelect: function() {
+        return this.$el.find('select');
+      },
+
+      // Use a Promise as a Null Object. Is it overkill ?
+      _getSelectedMedium: function() {
+        var selectingMedium = $.Deferred();
+
+        var selectedId = this._findSelect().val();
+
+        if (selectedId === "-1") {
+          selectingMedium.reject();
+        } else {
+          selectingMedium.resolve(this.collection.get(selectedId));
+        }
+
+        return selectingMedium.promise();
       }
     });
 

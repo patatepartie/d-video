@@ -1,9 +1,9 @@
 define([
   'backbone', 'mustache', 
-  'text!templates/medium_edit_view.html'], 
+  'text!templates/medium_edition_view.html'], 
 
   function(Backbone, Mustache, template) {
-    var MediumEditView = Backbone.View.extend({
+    var MediumEditionView = Backbone.View.extend({
       template: Mustache.compile(template),
 
       events: {
@@ -29,6 +29,6 @@ define([
       }
     });
 
-    return MediumEditView;
+    return MediumEditionView;
   }
 );
