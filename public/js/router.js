@@ -24,7 +24,11 @@ define([
       },
 
       navigateToMediumUrl: function(medium) {
-        this.navigate("medium/" + medium.get('id'));
+        if (medium) {
+          this.navigate("medium/" + medium.get('id'));
+        } else {
+          this.navigate("", {trigger: true});
+        }
       }
     });
 

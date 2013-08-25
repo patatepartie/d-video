@@ -35,7 +35,7 @@ define([
         this.region.show(selectionView);
 
         if (medium) {
-          if (medium.prototype === Medium) {
+          if (medium instanceof Medium) {
             selectionView.selectMedium(medium);        
           } else {
             selectionView.selectMedium(new Medium({id: medium}));
