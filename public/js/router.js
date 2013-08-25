@@ -5,18 +5,24 @@ define([
     var Router = Backbone.Router.extend({
       routes: {
         "": "loadLayout",
+        "medium/new": "createMedium",
         "medium/:id": "selectMedium"
       },
 
       initialize: function (options) {
         this.library = new Library({initialMedia: options.initialMedia});
         Backbone.on({
-          "library:select_medium": this.navigateToMediumUrl
+          "library:select_medium": this.navigateToMediumUrl,
+          "library:create_medium": this.navigateToNewMediumUrl
         }, this);
       },
 
       loadLayout: function () {
         this.library.showMediaView();
+      },
+
+      createMedium: function() {
+        this.library.createMedium();
       },
 
       selectMedium: function(id) {
@@ -29,6 +35,10 @@ define([
         } else {
           this.navigate("", {trigger: true});
         }
+      },
+
+      navigateToNewMediumUrl: function() {
+        this.navigate("medium/new");
       }
     });
 

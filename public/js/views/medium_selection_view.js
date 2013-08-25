@@ -1,8 +1,8 @@
 define([
   'backbone', 'mustache', 
-  'text!templates/medium_selection_view.html'], 
+  'text!templates/medium_selection_view.html', 'models/medium'], 
 
-  function(Backbone, Mustache, template) {
+  function(Backbone, Mustache, template, Medium) {
     var MediumSelectionView = Backbone.View.extend({
       template: Mustache.compile(template),
 
@@ -27,7 +27,19 @@ define([
       },
 
       selectMedium: function(medium) {
-        this.$el.find('select').val(medium.get('id')).change();
+        if (medium) {
+          if (medium instanceof Medium) {
+            this._selectOption(medium.get('id'));
+          } else {
+            this._selectOption(medium);
+          }
+        } else {
+          this._selectOption('-1');
+        }
+      },
+
+      _selectOption: function(id) {
+        this._findSelect().val(id).change();
       },
 
       _mediumSelected: function(event) {
@@ -43,7 +55,7 @@ define([
       _mediumCreationRequested: function (event) {
         event.preventDefault();
 
-        Backbone.trigger('library:edit_medium');
+        Backbone.trigger('library:create_medium');
       },
 
       _mediumEditionRequested: function (event) {

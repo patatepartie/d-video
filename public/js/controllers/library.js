@@ -20,6 +20,7 @@ define([
       initialize: function (options) {
         Backbone.on( {
           "library:select_medium": this.selectMedium,
+          "library:create_medium": this.createMedium,
           "library:edit_medium": this.editMedium,
           "library:delete_medium": this.deleteMedium
         }, this);
@@ -34,23 +35,24 @@ define([
 
         this.region.show(selectionView);
 
-        if (medium) {
-          if (medium instanceof Medium) {
-            selectionView.selectMedium(medium);        
-          } else {
-            selectionView.selectMedium(new Medium({id: medium}));
-          }
-        }
+        selectionView.selectMedium(medium);        
       },
 
       selectMedium: function(medium) {
         this.selectedMedium = medium;
       },
 
+      createMedium: function() {
+        this._editMedium(new Medium());
+      },
+
       editMedium: function(currentMedium) {
-        var selectedOrNewMedium = currentMedium ? currentMedium.clone() : new Medium();
-        var mediumEditing = this.region.show(new MediumEditionView({model: selectedOrNewMedium}));
+        this._editMedium(currentMedium.clone());
+      },
+
+      _editMedium: function(medium) {
         var self = this;
+        var mediumEditing = this.region.show(new MediumEditionView({model: medium}));
 
         mediumEditing.done(function(medium) {
           if (medium.hasChanged()) {
