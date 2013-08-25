@@ -37,6 +37,7 @@ delete '/api/media/:id' do
 end
 
 get '/*' do
+  puts params[:splat]
   haml :index, locals: {media: allMediaInJson(db)}
 end
 

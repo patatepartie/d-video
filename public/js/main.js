@@ -1,5 +1,5 @@
 requirejs.config({
-	baseUrl: 'js',
+	baseUrl: '/js',
 	paths: {
 		'jquery': '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min',
 		'underscore': '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min',

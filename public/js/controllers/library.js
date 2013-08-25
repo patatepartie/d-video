@@ -35,7 +35,11 @@ define([
         this.region.show(selectionView);
 
         if (medium) {
-          selectionView.selectMedium(medium);        
+          if (medium.prototype === Medium) {
+            selectionView.selectMedium(medium);        
+          } else {
+            selectionView.selectMedium(new Medium({id: medium}));
+          }
         }
       },
 
