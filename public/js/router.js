@@ -13,7 +13,9 @@ define([
         this.library = new Library({initialMedia: options.initialMedia});
         Backbone.on({
           "library:select_medium": this.navigateToMediumUrl,
-          "library:create_medium": this.navigateToNewMediumUrl
+          "library:create_medium": this.navigateToNewMediumUrl,
+          "library:edit_medium": this.navigateToEditMediumUrl,
+          "library:delete_medium": this.navigateToDeleteMediumUrl
         }, this);
       },
 
@@ -29,6 +31,10 @@ define([
         this.library.showMediaView(id);
       },
 
+      navigateToNewMediumUrl: function() {
+        this.navigate("medium/new");
+      },
+
       navigateToMediumUrl: function(medium) {
         if (medium) {
           this.navigate("medium/" + medium.get('id'));
@@ -37,8 +43,20 @@ define([
         }
       },
 
-      navigateToNewMediumUrl: function() {
-        this.navigate("medium/new");
+      navigateToEditMediumUrl: function(medium) {
+        if (medium) {
+          this.navigate("medium/" + medium.get('id') + "/edit");
+        } else {
+          this.navigate("", {trigger: true});
+        }
+      },
+
+      navigateToDeleteMediumUrl: function(medium) {
+        if (medium) {
+          this.navigate("medium/" + medium.get('id') + "/delete");
+        } else {
+          this.navigate("", {trigger: true});
+        }
       }
     });
 
