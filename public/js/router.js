@@ -6,7 +6,9 @@ define([
       routes: {
         "": "loadLayout",
         "medium/new": "createMedium",
-        "medium/:id": "selectMedium"
+        "medium/:id": "selectMedium",
+        "medium/:id/edit": "editMedium",
+        "medium/:id/delete": "deleteMedium"
       },
 
       initialize: function (options) {
@@ -20,7 +22,7 @@ define([
       },
 
       loadLayout: function () {
-        this.library.showMediaView();
+        this.library.showMedia();
       },
 
       createMedium: function() {
@@ -28,7 +30,15 @@ define([
       },
 
       selectMedium: function(id) {
-        this.library.showMediaView(id);
+        this.library.showMedia(id);
+      },
+
+      editMedium: function(id) {
+        this.library.editMedium(id);
+      },
+
+      deleteMedium: function(id) {
+        this.library.deleteMedium(id);
       },
 
       navigateToNewMediumUrl: function() {

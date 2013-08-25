@@ -30,7 +30,7 @@ define([
         this.media = new Media(options.initialMedia);
       },
 
-      showMediaView: function (medium) {
+      showMedia: function (medium) {
         var selectionView = new MediumSelectionView({collection: this.media});
 
         this.region.show(selectionView);
@@ -47,7 +47,8 @@ define([
       },
 
       editMedium: function(currentMedium) {
-        this._editMedium(currentMedium.clone());
+        var medium = this._mediumFromParameter(currentMedium);
+        this._editMedium(medium.clone());
       },
 
       _editMedium: function(medium) {
@@ -55,29 +56,36 @@ define([
         var mediumEditing = this.region.show(new MediumEditionView({model: medium}));
 
         mediumEditing.done(function(medium) {
-          if (medium.hasChanged()) {
-            self.media.add(medium, {merge: true});
+          self.media.add(medium, {merge: true});
 
-            medium.save().done(function() {
-              self.showMediaView(medium)    
-            });
-          }
+          medium.save().done(function() {
+            self.showMedia(medium)    
+          });
         }).fail(function() {
-          self.showMediaView(self.selectedMedium);
+          if (medium.isNew()) {
+            self.showMedia(self.selectedMedium);
+          } else {
+            self.showMedia(medium);
+          }
         });
       },
 
       deleteMedium: function (currentMedium) {
-        var mediumDeleting = this.region.show(new MediumDeletionView({model: currentMedium}));
         var self = this;
+        var medium = this._mediumFromParameter(currentMedium);
+        var mediumDeleting = this.region.show(new MediumDeletionView({model: medium}));
 
         mediumDeleting.done(function(medium) {
           medium.destroy();
 
-          self.showMediaView();
+          self.showMedia();
         }).fail(function() {
-          self.showMediaView(self.selectedMedium);
+          self.showMedia(medium);
         });
+      },
+
+      _mediumFromParameter: function(medium) {
+        return medium instanceof Medium ? medium : this.media.get(medium);
       }
     });
 
