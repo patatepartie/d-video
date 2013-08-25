@@ -7,8 +7,8 @@ define([
         "": "loadLayout"
       },
 
-      initialize: function () {
-        this.library = new Library();
+      initialize: function (options) {
+        this.library = new Library({initialMedia: options.initialMedia});
       },
 
       loadLayout: function () {

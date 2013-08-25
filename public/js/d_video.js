@@ -1,10 +1,9 @@
 define(['backbone', 'router'], function(Backbone, Router) {
   var Application = function() {
     return {
-      start: function() {
-        this.router = new Router();
-        
-        _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
+      start: function(boostrap) {
+        var initialMedia = boostrap ? boostrap.media : [];
+        this.router = new Router({initialMedia: initialMedia});
         
         Backbone.history.start({pushState: true});
       }

@@ -17,7 +17,7 @@ define([
         this.el = options.el;
       },
 
-      initialize: function () {
+      initialize: function (options) {
         Backbone.on( {
           "library:select_medium": this.selectMedium,
           "library:edit_medium": this.editMedium,
@@ -26,9 +26,7 @@ define([
 
         this.region = new Region({el: "#medium .selection"});
 
-        // Replace that by a bootstrap
-        this.media = new Media();
-        this.media.fetch({reset :true});
+        this.media = new Media(options.initialMedia);
       },
 
       showMediaView: function (medium) {
@@ -51,11 +49,11 @@ define([
 
         mediumEditing.done(function(medium) {
           if (medium.hasChanged()) {
+            self.media.add(medium);
+
             medium.save().done(function() {
               self.showMediaView(medium)    
             });
-
-            self.media.add(medium);
           }
         }).fail(function() {
           self.showMediaView(this.selectedMedium);

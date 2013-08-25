@@ -3,6 +3,10 @@ db = Mongo::MongoClient.new(settings.db_host, settings.db_port).db(settings.db_n
 get '/api/media' do
   content_type :json
 
+  allMediaInJson(db)
+end
+
+def allMediaInJson(db)
   db["media"].find.sort(:title).to_a.map {|medium| replace_bson_id(medium)}.to_json
 end
 
@@ -33,7 +37,7 @@ delete '/api/media/:id' do
 end
 
 get '/*' do
-  haml :index
+  haml :index, locals: {media: allMediaInJson(db)}
 end
 
 def created_http_response(id)

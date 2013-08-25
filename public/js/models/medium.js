@@ -3,9 +3,9 @@ define(['backbone'], function(Backbone) {
     defaults: {
       title: ''
     },
-    validation: {
-      title: {
-        required: true
+    validate: function(attrs, options) {
+      if (!attrs.title.trim()) {
+        return 'Cannot have a blank title';
       }
     }
   });

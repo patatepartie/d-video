@@ -7,12 +7,18 @@
 
   %link{'rel' => 'stylesheet', 'href' => 'css/main.css'}
   %script{'src'  => 'js/vendor/require.js', 'data-main' => 'js/main'}
+  :javascript
+    window.dVideo = {
+      bootstrap: {
+        media: #{media}
+      }
+    }
 %body
-  %div#medium
-    %div.selection
-    %div.display
-    %div.controls
-  %div#content
-    %div.selection
-    %div.display
-    %div.controls
+  #medium
+    .selection
+    .display
+    .controls
+  #content
+    .selection
+    .display
+    .controls

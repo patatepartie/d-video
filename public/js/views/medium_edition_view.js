@@ -13,7 +13,6 @@ define([
 
       initialize: function() {
         this.result = Backbone.$.Deferred();
-        Backbone.Validation.bind(this);
       },
 
       promise: function() {
@@ -22,18 +21,19 @@ define([
 
       render: function () {
         this.$el.html(this.template(this.model.attributes));
-
+        this.$('.invalid').hide();
         return this;
       },
 
       editValidated: function () {
-        var newTitle = this.$el.find('[name=title]').val();
-        this.model.set({title: newTitle});
-
-        if (this.model.isValid(true)) {
+        var newTitle = this.$('[name=title]').val();
+        this.model.set('title', newTitle)
+        if (this.model.isValid()) {
+          console.log('valid');
           this.result.resolve(this.model);
         } else {
-          this.result.reject();
+          console.log('invalid');
+          this.$('.invalid').show();
         }
       },
 
