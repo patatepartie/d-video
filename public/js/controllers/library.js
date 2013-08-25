@@ -44,19 +44,20 @@ define([
       },
 
       editMedium: function(currentMedium) {
-        var mediumEditing = this.region.show(new MediumEditionView({model: currentMedium || new Medium()}));
+        var selectedOrNewMedium = currentMedium ? currentMedium.clone() : new Medium();
+        var mediumEditing = this.region.show(new MediumEditionView({model: selectedOrNewMedium}));
         var self = this;
 
         mediumEditing.done(function(medium) {
           if (medium.hasChanged()) {
-            self.media.add(medium);
+            self.media.add(medium, {merge: true});
 
             medium.save().done(function() {
               self.showMediaView(medium)    
             });
           }
         }).fail(function() {
-          self.showMediaView(this.selectedMedium);
+          self.showMediaView(self.selectedMedium);
         });
       },
 
@@ -69,7 +70,7 @@ define([
 
           self.showMediaView();
         }).fail(function() {
-          self.showMediaView(this.selectedMedium);
+          self.showMediaView(self.selectedMedium);
         });
       }
     });

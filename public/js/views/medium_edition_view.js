@@ -29,10 +29,8 @@ define([
         var newTitle = this.$('[name=title]').val();
         this.model.set('title', newTitle)
         if (this.model.isValid()) {
-          console.log('valid');
           this.result.resolve(this.model);
         } else {
-          console.log('invalid');
           this.$('.invalid').show();
         }
       },
