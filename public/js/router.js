@@ -1,7 +1,7 @@
 define([
-  'backbone', 'controllers/library'], 
+  'backbone'], 
 
-  function(Backbone, Library) {
+  function(Backbone) {
     var Router = Backbone.Router.extend({
       routes: {
         "": "loadLayout",
@@ -12,7 +12,9 @@ define([
       },
 
       initialize: function (options) {
-        this.library = new Library({initialMedia: options.initialMedia});
+        this.library = options.library;
+        this.theater = options.theater;
+
         Backbone.on({
           "library:select_medium": this.navigateToMediumUrl,
           "library:create_medium": this.navigateToNewMediumUrl,

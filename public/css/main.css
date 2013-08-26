@@ -15,7 +15,7 @@
 	height: 850px;	
 }
 
-#mediaFileLoader .mediaFileChooser{
+#content .selection .content_file{
 	display: none;
 }
 

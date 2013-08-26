@@ -1,12 +1,12 @@
 define([
-  'backbone', 'region', 
+  'backbone', 'underscore', 'region', 
   'views/medium_selection_view', 
   'views/medium_edition_view',
   'views/medium_deletion_view',
   'collections/media',
   'models/medium'], 
 
-  function(Backbone, Region, MediumSelectionView, MediumEditionView, MediumDeletionView, Media, Medium) {
+  function(Backbone, _, Region, MediumSelectionView, MediumEditionView, MediumDeletionView, Media, Medium) {
     var Library = function(options) {
       this._configure(options || {});
       this.initialize.apply(this, arguments);
@@ -18,16 +18,16 @@ define([
       },
 
       initialize: function (options) {
+        this.region = new Region({el: "#medium .selection"});
+        
+        this.media = new Media(options.initialMedia);
+
         Backbone.on( {
           "library:select_medium": this.selectMedium,
           "library:create_medium": this.createMedium,
           "library:edit_medium": this.editMedium,
           "library:delete_medium": this.deleteMedium
         }, this);
-
-        this.region = new Region({el: "#medium .selection"});
-
-        this.media = new Media(options.initialMedia);
       },
 
       showMedia: function (medium) {
