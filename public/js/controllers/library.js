@@ -31,15 +31,14 @@ define([
       },
 
       showMedia: function (medium) {
-        var selectionView = new MediumSelectionView({collection: this.media});
-
-        this.region.show(selectionView);
-
-        selectionView.selectMedium(medium);        
+        this.region.show(new MediumSelectionView({collection: this.media}));
+        this.selectMedium(medium);
       },
 
       selectMedium: function(medium) {
-        this.selectedMedium = medium;
+        if (medium) {
+          this.media.changeSelected(medium);
+        }
       },
 
       createMedium: function() {
@@ -63,7 +62,7 @@ define([
           });
         }).fail(function() {
           if (medium.isNew()) {
-            self.showMedia(self.selectedMedium);
+            self.showMedia(self.media.getSelected());
           } else {
             self.showMedia(medium);
           }

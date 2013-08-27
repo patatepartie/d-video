@@ -1,15 +1,17 @@
 define([
   'backbone', 'mustache', 
-  'text!templates/medium_selection_view.html', 'models/medium'], 
+  'text!templates/medium_selection_view.html',
+  'views/medium_view',
+  'views/selected_medium_view',
+  'models/medium'], 
 
-  function(Backbone, Mustache, template, Medium) {
+  function(Backbone, Mustache, template, MediumView, SelectedMediumView, Medium) {
     var MediumSelectionView = Backbone.View.extend({
       tagName: "form",
       className: "form-inline",
       template: Mustache.compile(template),
 
       events: {
-        "change select": "_mediumSelected",
         "click .controls [name=add]": "_mediumCreationRequested",
         "click .controls [name=edit]": "_mediumEditionRequested",
         "click .controls [name=delete]": "_mediumDeletionRequested"
@@ -17,41 +19,24 @@ define([
 
       initialize: function () {
         this.listenTo(this.collection, 'reset', this.render);
-        this.listenTo(this.collection, 'add', this.render);
-        this.listenTo(this.collection, 'remove', this.render);
-        this.listenTo(this.collection, 'change', this.render);
+        this.listenTo(this.collection, 'add', this.addMedium);
+
+        Backbone.trigger('library:select_medium', this.collection.getSelected());
+      },
+
+      addMedium: function(medium) {
+        this.$("ul").append(new MediumView({model: medium}).render().el);
       },
 
       render: function (event) {
-        this.$el.html(this.template({media: this.collection.toJSON()}));
+        this.$el.html(new SelectedMediumView({collection: this.collection}).render().el);
+        this.$el.append(this.template());
+
+        this.collection.each(function(medium) {
+          this.addMedium(medium);
+        }, this);
 
         return this;
-      },
-
-      selectMedium: function(medium) {
-        if (medium) {
-          if (medium instanceof Medium) {
-            this._selectOption(medium.get('id'));
-          } else {
-            this._selectOption(medium);
-          }
-        } else {
-          this._selectOption('-1');
-        }
-      },
-
-      _selectOption: function(id) {
-        this._findSelect().val(id).change();
-      },
-
-      _mediumSelected: function(event) {
-        event.preventDefault();
-
-        this._getSelectedMedium().done(function (selectedMedium) {
-          Backbone.trigger('library:select_medium', selectedMedium);
-        }).fail(function() {
-          Backbone.trigger('library:select_medium');
-        });
       },
 
       _mediumCreationRequested: function (event) {
@@ -63,36 +48,19 @@ define([
       _mediumEditionRequested: function (event) {
         event.preventDefault();
 
-        this._getSelectedMedium().done(function (selectedMedium) {
+        var selectedMedium = this.collection.getSelected();
+        if (selectedMedium) {
           Backbone.trigger('library:edit_medium', selectedMedium);
-        });
+        }
       },
 
       _mediumDeletionRequested: function (event) {
         event.preventDefault();
 
-        this._getSelectedMedium().done(function (selectedMedium) {
+        var selectedMedium = this.collection.getSelected();
+        if (selectedMedium) {
           Backbone.trigger('library:delete_medium', selectedMedium);
-        });
-      },
-
-      _findSelect: function() {
-        return this.$el.find('select');
-      },
-
-      // Use a Promise as a Null Object. Is it overkill ?
-      _getSelectedMedium: function() {
-        var selectingMedium = $.Deferred();
-
-        var selectedId = this._findSelect().val();
-
-        if (selectedId === "-1") {
-          selectingMedium.reject();
-        } else {
-          selectingMedium.resolve(this.collection.get(selectedId));
         }
-
-        return selectingMedium.promise();
       }
     });
 
