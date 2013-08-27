@@ -68,7 +68,7 @@ define([
 
       _mediumDeletionRequested: function (event) {
         event.preventDefault();
-
+        
         this._getSelectedMedium().done(function (selectedMedium) {
           Backbone.trigger('library:delete_medium', selectedMedium);
         });

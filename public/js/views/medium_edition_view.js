@@ -7,8 +7,8 @@ define([
       template: Mustache.compile(template),
 
       events: {
-        "click .btn-group [name=ok]": "editValidated",
-        "click .btn-group [name=cancel]": "editCancelled"
+        "click .controls [name=ok]": "editValidated",
+        "click .controls [name=cancel]": "editCancelled"
       },
 
       initialize: function() {
@@ -26,7 +26,7 @@ define([
       },
 
       editValidated: function (event) {
-        event.preventDefault(); 
+        event.preventDefault();
 
         var newTitle = this.$('#title').val();
         this.model.set('title', newTitle)
@@ -37,7 +37,7 @@ define([
         }
       },
 
-      editCancelled: function () {
+      editCancelled: function (event) {
         event.preventDefault();
         
         this.result.reject();

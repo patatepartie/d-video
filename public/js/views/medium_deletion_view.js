@@ -25,11 +25,15 @@ define([
         return this;
       },
 
-      deletionValidated: function () {
+      deletionValidated: function (event) {
+        event.preventDefault();
+
         this.result.resolve(this.model);
       },
 
-      deletionCancelled: function () {
+      deletionCancelled: function (event) {
+        event.preventDefault();
+        
         this.result.reject();
       }
     });
