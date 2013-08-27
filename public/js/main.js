@@ -2,6 +2,7 @@ requirejs.config({
 	baseUrl: '/js',
 	paths: {
 		'jquery': '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min',
+		'bootstrap': '//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min',
 		'underscore': '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min',
 		'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
 		'text': '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text',
@@ -15,7 +16,8 @@ requirejs.config({
 			deps: ['underscore', 'jquery'],
 			exports: 'Backbone'
 		},
-		'd_video': ['underscore', 'backbone']
+		'bootstrap': ['jquery'],
+		'd_video': ['bootstrap', 'underscore', 'backbone']
 	}
 });
 

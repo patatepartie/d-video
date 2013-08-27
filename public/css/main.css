@@ -1,46 +1,12 @@
-#descriptions {
-	float: left;
-	width: 200px;
-	height: 850px;
-}
-
-#description {
-	height: 380px;
-	border-style: solid;
-	border-width: 1px;
-}
-
-#right {
-	float: left;
-	height: 850px;	
-}
-
 #content .selection .content_file{
 	display: none;
 }
 
-#player .speed {
-	height: 340px;
-	float: left;
-}
-
-#content {
-    float: left;
-    width: 720px;
-    height: 358px;
-}
-
-#player .play {
-	float: left;
-}
-
-#player .seeker {
-	width: 650px;
-    float: left;
-}
-
-.rightSelected {
-	background:#ff0000; 
-	border:1px solid #99defd; 
-	padding:0 2px 0 1px;
+[class*="col-"] {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #eee;
+  border: 1px solid #ddd;
+  background-color: rgba(86,61,124,.15);
+  border: 1px solid rgba(86,61,124,.2);
 }

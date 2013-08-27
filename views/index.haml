@@ -5,6 +5,7 @@
   %title='D-Video'
   %meta{'name' => 'viewport', 'content' => 'width=device-width,initial-scale=1'}
 
+  %link{'rel' => 'stylesheet', 'href' => '//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css'}
   %link{'rel' => 'stylesheet', 'href' => '/css/main.css'}
   %script{'src'  => '/js/vendor/require.js', 'data-main' => '/js/main'}
   :javascript
@@ -14,11 +15,14 @@
       }
     }
 %body
-  #medium
-    .selection
-    .display
-    .controls
-  #content
-    .selection
-    .display
-    .controls
+  .row
+    .col-md-4
+      #medium
+        .selection
+        .display
+        .controls
+    .col-md-8
+      #content
+        .selection
+        .display
+        .controls
