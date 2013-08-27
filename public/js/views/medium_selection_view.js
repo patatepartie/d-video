@@ -4,6 +4,8 @@ define([
 
   function(Backbone, Mustache, template, Medium) {
     var MediumSelectionView = Backbone.View.extend({
+      tagName: "form",
+      className: "form-inline",
       template: Mustache.compile(template),
 
       events: {
@@ -68,7 +70,7 @@ define([
 
       _mediumDeletionRequested: function (event) {
         event.preventDefault();
-        
+
         this._getSelectedMedium().done(function (selectedMedium) {
           Backbone.trigger('library:delete_medium', selectedMedium);
         });

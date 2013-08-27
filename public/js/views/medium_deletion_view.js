@@ -4,6 +4,7 @@ define([
 
   function(Backbone, Mustache, template) {
     var MediumDeletionView = Backbone.View.extend({
+      className: "form-inline",
       template: Mustache.compile(template),
 
       events: {
@@ -33,7 +34,7 @@ define([
 
       deletionCancelled: function (event) {
         event.preventDefault();
-        
+
         this.result.reject();
       }
     });

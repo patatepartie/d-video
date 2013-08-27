@@ -4,6 +4,8 @@ define([
 
   function(Backbone, Mustache, template) {
     var MediumEditionView = Backbone.View.extend({
+      tagName: "form",
+      className: "form-inline",
       template: Mustache.compile(template),
 
       events: {
@@ -39,7 +41,7 @@ define([
 
       editCancelled: function (event) {
         event.preventDefault();
-        
+
         this.result.reject();
       }
     });
